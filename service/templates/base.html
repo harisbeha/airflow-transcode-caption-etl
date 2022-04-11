@@ -1,0 +1,312 @@
+{% load notifications_tags %}
+
+{% notifications_unread as unread_count %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    {% block title %}
+        <title>
+            $1.00/min Captions - Subtitles | MyApp by MyDomain
+        </title>
+    {% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="$1.00 per minute Caption Platform" name="description" />
+    <meta content="MyDomain" name="author" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" crossorigin="anonymous"></script>
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/favicon.ico">
+        <!-- Scripts -->
+
+        <!-- Fonts -->
+        <link rel="dns-prefetch" href="//fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+        <link rel="stylesheet" href="//cdn.materialdesignicons.com/5.1.45/css/materialdesignicons.min.css" crossorigin="anonymous" />
+        <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.min.css" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/node-waves/0.7.6/waves.js" integrity="sha256-SxHnxDPgkYE5U1uGFnTOxg9P3umN5+7QocfOCvpaYPo=" crossorigin="anonymous"></script>
+        <!-- Styles -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/fontawesome.min.js" integrity="sha256-NP9NujdEzS5m4ZxvNqkcbxyHB0dTRy9hG13RwTVBGwo=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;700&display=swap" rel="stylesheet">
+        <link href="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/css/app.min.css" rel="stylesheet">
+
+        <style>
+            .mdi::before {
+    font-size: 24px;
+    line-height: 14px;
+}
+.btn .mdi::before {
+    position: relative;
+    top: 4px;
+}
+.btn-xs .mdi::before {
+    font-size: 18px;
+    top: 3px;
+}
+.btn-sm .mdi::before {
+    font-size: 18px;
+    top: 3px;
+}
+.dropdown-menu .mdi {
+    width: 18px;
+}
+.dropdown-menu .mdi::before {
+    position: relative;
+    top: 4px;
+    left: -8px;
+}
+.nav .mdi::before {
+    position: relative;
+    top: 4px;
+}
+.navbar .navbar-toggle .mdi::before {
+    position: relative;
+    top: 4px;
+    color: #FFF;
+}
+.breadcrumb .mdi::before {
+    position: relative;
+    top: 4px;
+}
+.breadcrumb a:hover {
+    text-decoration: none;
+}
+.breadcrumb a:hover span {
+    text-decoration: underline;
+}
+.alert .mdi::before {
+    position: relative;
+    top: 4px;
+    margin-right: 2px;
+}
+.input-group-addon .mdi::before {
+    position: relative;
+    top: 3px;
+}
+.navbar-brand .mdi::before {
+    position: relative;
+    top: 2px;
+    margin-right: 2px;
+}
+.list-group-item .mdi::before {
+    position: relative;
+    top: 3px;
+    left: -3px
+}
+        </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/3.0.6/metisMenu.js" integrity="sha256-otPyoUmXDlf9jd3/syGGeVsXuWu5dPzHi+RuNh/k1TA=" crossorigin="anonymous"></script>
+
+    {% include 'frontend_theme/headlayout.html' %}
+
+    <script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/js/app.min.js" defer></script>
+
+
+
+    <style>
+        .text-orange-600 {
+    --text-opacity: 1;
+    color: #dd6b20;
+    color: rgba(221,107,32,var(--text-opacity));
+}
+
+.shadow {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+}
+.p-2 {
+    padding: .5rem;
+}
+.leading-none {
+    line-height: 1;
+}
+.text-sm {
+    font-size: .875rem;
+}
+.items-center {
+    align-items: center;
+}
+.inline-flex {
+    display: inline-flex;
+}
+.rounded-full {
+    border-radius: 9999px;
+}
+.bg-white {
+    --bg-opacity: 1;
+    background-color: #fff;
+    background-color: rgba(255,255,255,var(--bg-opacity));
+}
+.bg-blue-no-gradient {
+    background: #3a79ef;
+}
+
+.text-white {
+    --text-opacity: 1;
+    color: #fff;
+    color: rgba(255,255,255,var(--text-opacity));
+}
+.px-3 {
+    padding-left: .75rem;
+    padding-right: .75rem;
+}
+.h-6 {
+    height: 1.5rem;
+}
+.justify-center {
+    justify-content: center;
+}
+.items-center {
+    align-items: center;
+}
+.inline-flex {
+    display: inline-flex;
+}
+.rounded-full {
+    border-radius: 9999px;
+}
+
+.vertical-menu{
+    max-height: 60vh;
+}
+
+body{
+    font-family: "Poppins", sans-serif !important;
+}
+
+    </style>
+
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <link rel="shortcut icon" href="https://storage.googleapis.com/cirrus-static-assets/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://storage.googleapis.com/cirrus-static-assets/favicon.ico" type="image/x-icon">
+
+
+
+  <script>
+    !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var t=analytics.methods[e];analytics[t]=analytics.factory(t)}analytics.load=function(e,t){var n=document.createElement("script");n.type="text/javascript";n.async=!0;n.src="https://cdn.segment.com/analytics.js/v1/"+e+"/analytics.min.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(n,a);analytics._loadOptions=t};analytics.SNIPPET_VERSION="4.1.0";
+    analytics.load("kpTWF9z7mVQ1VaiYVp9lv6uUNoAuLdap");
+    analytics.page();
+    }}();
+
+  analytics.identify("{{request.user.id}}", {
+    name: "{{request.user.first_name}} {{request.user.last_name}}",
+    email: "{{request.user.email}}",
+  });
+  </script>
+
+  <script>
+    window.intercomSettings = {
+      app_id: "oe4rcbob",
+      name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+      email: "{{ request.user.email }}",
+    };
+  </script>
+  
+  <script>
+  // We pre-filled your app ID in the widget URL: 'https://widget.intercom.io/widget/oe4rcbob'
+  (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/oe4rcbob';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+  </script>
+
+	<style>
+		[x-cloak] {
+			display: none;
+		}
+		body {
+			font-family: 'Poppins', sans-serif !important;
+		}
+
+    .bg-blue-color {
+      background: #3a79ef;
+      background-repeat: repeat-x;
+      background-image: -webkit-linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -o-linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -webkit-linear-gradient(315deg,#3a79ef,#184cad);
+      background-image: -o-linear-gradient(315deg,#3a79ef,#184cad);
+      background-image: linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -webkit-linear-gradient(315deg,#3a79ef,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad);
+      background-image: -o-linear-gradient(315deg,#3a79ef 0,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad 100%);
+      background-image: linear-gradient(135deg,#3a79ef,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad);
+}
+
+.bg-blue-gradient {
+      background: #3a79ef;
+      background-repeat: repeat-x;
+      background-image: -webkit-linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -o-linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -webkit-linear-gradient(315deg,#3a79ef,#184cad);
+      background-image: -o-linear-gradient(315deg,#3a79ef,#184cad);
+      background-image: linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -webkit-linear-gradient(315deg,#3a79ef,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad);
+      background-image: -o-linear-gradient(315deg,#3a79ef 0,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad 100%);
+      background-image: linear-gradient(135deg,#3a79ef,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad);
+}
+
+.bg-blue-no-gradient {
+      background: #3a79ef;
+}
+
+.active-text-color{
+  color: #ef833a !important;
+}
+
+  </style>
+  
+
+</head>
+
+<body data-layout="detached" data-topbar="colored" data-gr-c-s-loaded="true" class="">
+    <!-- Loader -->
+    <div id="preloader" style="display: none;">
+        <div id="status" style="display: none;">
+            <div class="spinner-chase">
+                <div class="chase-dot"></div>
+                <div class="chase-dot"></div>
+                <div class="chase-dot"></div>
+                <div class="chase-dot"></div>
+                <div class="chase-dot"></div>
+                <div class="chase-dot"></div>
+            </div>
+        </div>
+    </div>
+<!-- Begin page -->
+<div class="container-fluid">
+    <div id="layout-wrapper">
+        <!-- @include('layouts.hor-menu') -->
+        {% include 'frontend_theme/topnav.html' %}
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+
+        {% include 'frontend_theme/sidebar.html' %}
+        
+        <div class="main-content">
+            <div class="page-content">
+                {% block content %}
+                {% endblock %}
+            </div>
+            {% include 'frontend_theme/footer.html' %}
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Right content here -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- END wrapper -->
+</div>
+<!-- Right Sidebar -->
+<!-- @include('layouts.right-sidebar') -->
+<!-- END Right Sidebar -->
+
+{% include 'frontend_theme/footer-scripts.html' %}
+
+</body>
+
+</html>

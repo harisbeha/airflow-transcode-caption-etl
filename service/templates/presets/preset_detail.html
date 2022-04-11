@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+<p>
+    <a class="btn btn-light" href="{% url 'orders_Preset_list' %}">
+    Preset Listing
+    </a>
+</p>
+    
+<table class="table">
+    <tr><td>name</td><td>{{ object.name }}</td></tr>
+    <tr><td>source_language</td><td>{{ object.source_language }}</td></tr>
+    <tr><td>turnaround_time</td><td>{{ object.turnaround_time }}</td></tr>
+    <tr><td>global_default</td><td>{{ object.global_default }}</td></tr>
+    <tr><td>is_default</td><td>{{ object.is_default }}</td></tr>
+    <tr><td>target_languages</td><td>{{ object.target_languages }}</td></tr>
+    <tr><td>speaker_id</td><td>{{ object.speaker_id }}</td></tr>
+    <tr><td>rush_12</td><td>{{ object.rush_12 }}</td></tr>
+    <tr><td>true_verbatim</td><td>{{ object.true_verbatim }}</td></tr>
+    <tr><td>rush_24</td><td>{{ object.rush_24 }}</td></tr>
+</table>
+<a class="btn btn-primary" href="{{object.get_update_url}}">Edit</a>

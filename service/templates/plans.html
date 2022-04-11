@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>
+  Plans | MyApp by MyDomain
+</title>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="flex flex-wrap -mx-4">
+
+  {% include "fragments/cards/balances_coming_soon.html" %}
+
+  {% if payment_methods.data %}
+    {% include "fragments/cards/payment_method_list.html" %}
+  {% else %}
+    {% include "fragments/cards/no_payment_methods.html" %}
+  {% endif %}
+
+  {% include "fragments/cards/payment_history.html" %}
+
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Timeline -->
+    <div class="timeline">
+
+        <!-- Line component -->
+        <div class="line text-muted"></div>
+
+        <!-- Panel -->
+        {% for notice in notifications %}
+        <article class="panel panel-success">
+            <!-- Icon -->
+            <div class="panel-heading icon">
+                <i class="glyphicon glyphicon-plus"></i>
+            </div>
+            <!-- /Icon -->
+            <!-- Heading -->
+            <div class="panel-heading">
+                <h2 class="panel-title">
+                    {% if notice.target %} of {{ notice.target }} {% endif %}
+                </h2>
+            </div>
+            <!-- /Heading -->
+            <!-- Body -->
+            <div class="panel-body">
+                {{ notice.description }}
+            </div>
+            <!-- /Body -->
+            <!-- List group -->
+            <ul class="list-group">
+                <li class="list-group-item">{{ notice.timesince }} ago</li>
+            </ul>
+        </article>
+        {% endfor %}
+        <!-- /Panel -->
+
+        <!-- Panel -->
+        <article class="panel panel-info panel-outline">
+
+            <!-- /Icon -->
+
+            <!-- Body -->
+            <div class="panel-body">
+            </div>
+            <!-- /Body -->
+
+        </article>
+        <!-- /Panel -->
+
+    </div>
+    <!-- /Timeline -->
+</div>
+{% endblock %}

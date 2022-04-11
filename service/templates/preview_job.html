@@ -1,0 +1,677 @@
+import React from "react";
+import ReactDOM from "react-dom";
+import { ApolloClient } from "apollo-client";
+
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
+import { ApolloProvider, Query } from "react-apollo";
+import { setContext } from "apollo-link-context";
+import gql from "graphql-tag";
+
+// This is your average React Component just querying GraphQL
+// the only difference is you need to add "@client" to any
+// piece of query data that is coming from local state
+function App() {
+  const GET_POKEMONS = gql(`
+    query {
+      elementlists {
+        blocks
+        raw_text
+        job_id
+      }
+    }
+  `);
+
+  const renderContent = ({ loading, error, data }) => {
+    if (loading) return <h4>Loading...</h4>;
+    if (error) return <h4>Error...</h4>;
+
+    return (
+      <div className="App">
+        <h1>Hello {data.job_id}</h1>
+        <h2>These are your elementlists</h2>
+        <ul>
+          {data.elementlists.map(pokemon => (
+            <li key={pokemon.job_id}>{pokemon.job_id}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  return <Query query={GET_POKEMONS}>{renderContent}</Query>;
+}
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  // const token = localStorage.getItem('token');
+  const token =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6InVzZXIiLCJ4LWhhc3VyYS1hbGxvd2VkLXJvbGVzIjpbInVzZXIiXSwieC1oYXN1cmEtdXNlci1pZCI6ImF1dGgwfDVmMTNiMDQ1ZmZiNTA3MDAxOWRlZjliMyIsIngtaGFzdXJhLWNpcnJ1cy11c2VyLWlkIjoiMjUiLCJ4LWhhc3VyYS1jaXJydXMtZW50ZXJwcmlzZS1pZCI6IjI1In0sIm5pY2tuYW1lIjoiaGFyaXN0ZXN0and0IiwibmFtZSI6ImhhcmlzdGVzdGp3dEBjaWVsbzI0LmNvbSIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8yNmE0ZTNjMDRiOWZlZTk4YzMxYzRjZDIyODBlZmNhMj9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmhhLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDIwLTA3LTE5VDAyOjMyOjQyLjEzM1oiLCJpc3MiOiJodHRwczovL2NpZWxvMjQuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmMTNiMDQ1ZmZiNTA3MDAxOWRlZjliMyIsImF1ZCI6ImlYeno0UnVvSnVRaDExaGNFeDRjeFJCekpQV2xQMm9DIiwiaWF0IjoxNTk1MTI1OTYyLCJleHAiOjE1OTUxNjE5NjJ9.WMkRDgEfKimN9de-t8jZQ0qefe2ZOJOocC8eLMzuT0LR9qKoV6R-xoB_aKi8ZHsQa-PeGmtEkM7v9PSlE2JBX6goY5JVx2aiemZpP44PaiRcyDFVc4o_gerhPMP9nMHKaajpa7ZxOn5d6H9xinJ9D6LWcXTcpC7zVBHaxL7NRbMGofbGNnQWTC9ZW9Zty4pUTTlbVA4O1jTJ2mA9uQYF5WysEOybGzTqhcJjEAtix19LruvueI-rtAFNif74YljclBUL8y9W0hcMY23wCkhOCOghgQ45V1uEJpqobExFGQVGQqLflerhGjAb3ZfTfXeOYiAUK1BPputeYskBeuWuC6CDdyajGvA85GaSr9fO6gua7pdQjOK2kIjQjgHIR6ZaKF8uGGFP-3M6mjvmR3xkNXQlI2qTAJ02Xtr1-97QPUDSlTQC2bK4DPLMAI8-Ixz8bWnHhQ-FQEvab8ttmpc99n5scZnAYWuci2hrsOAQs2RK7dLPUWA9fDqRqhAXtTy9kVelyVYUE169uPcIJbmbTv9b_BN5tmdYFbUwuTJkJ7ngqdq0zkuzmONtLY45tHMONRC48KP-JfhN22nTAnNxmhi4qKiz6vsf3_r_D2OdDwHssxc_Eki_2kS_9mgnKxU0DxPFrgkaUJZYvrGUXLNZeTYacRn8WDuWr5fWoHG9DFQ";
+
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ""
+    }
+  };
+});
+
+// You can define resolvers + typeDefs and/or link
+// they do not depend on each other.
+// When you add resolvers + typeDefs you're just
+// extending your remote GraphQL API with one that
+// is defined locally
+let httpLink = new HttpLink({
+    uri: "https://cosmic-ringtail-61.hasura.app/v1/graphql"
+  }),
+  authedLink = authLink.concat(httpLink);
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authedLink,
+  resolvers: {
+    Query: {
+      user: () => ({ __typename: "User", job_id: "Trainer" })
+    }
+  },
+  typeDefs: `
+    type Query {
+      elementlists {
+        blocks
+        raw_text
+        job_id
+      }
+    }
+  `
+});
+
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
+  document.getElementById("root")
+);
+
+
+
+
+
+
+
+const PROFILE_QUERY = gql`
+  query CurrentUserForLayout {
+    currentUser {
+      login
+      avatar_url
+    }
+  }
+`;
+
+function Profile() {
+  const { client, loading, data: { currentUser } } = useQuery(
+    PROFILE_QUERY,
+    { fetchPolicy: "network-only" }
+  );
+
+  if (loading) {
+    return <p className="navbar-text navbar-right">Loading...</p>;
+  }
+
+  if (currentUser) {
+    return (
+      <span>
+        <p className="navbar-text navbar-right">
+          {currentUser.login}
+          &nbsp;
+          <button
+            onClick={() => {
+              // call your auth logout code then reset store
+              App.logout().then(() => client.resetStore());
+            }}
+          >
+            Log out
+          </button>
+        </p>
+      </span>
+    );
+  }
+
+  return (
+    <p className="navbar-text navbar-right">
+      <a href="/login/github">Log in with GitHub</a>
+    </p>
+  );
+}
+
+
+const ApolloClient = apolloClient.default;
+const gql = graphqlTag.default;
+
+const client = new ApolloClient();
+
+const query = gql`query {
+  posts {
+    name
+    title
+    content
+  }
+}`;
+
+const showResult = (posts) => {
+  document.getElementById('result').innerHTML =
+    JSON.stringify(posts, null, 2);
+};
+
+const observableQuery =
+  client.watchQuery({ query, pollInterval: 1000 });
+observableQuery.subscribe({
+  next: ({ data }) => showResult(data.posts),
+});
+
+const mutation = gql`mutation ($content: String){
+  addPost(name: "Mary", title: "No title", content: $content) {
+    name
+    title
+    content
+  }
+}`;
+
+document.getElementById('add').addEventListener('click', () => {
+  const content = document.getElementById('content').value;
+  client.mutate({ mutation, variables: { content } });
+});
+
+<html>
+  <head>
+    <title>Vanilla JS example for Apollo</title>
+    <script src="https://wzrd.in/standalone/apollo-client@0.4.20">
+    </script>
+    <script src="https://wzrd.in/standalone/graphql-tag@0.1.14">
+    </script>
+  </head>
+  <body>
+    <h1>Vanilla JS example for Apollo</h1>
+    <pre id="result"></pre>
+    <input id="content" />
+    <button id="add">Add</button>
+    <script src="vanilla.js"></script>
+  </body>
+</html>
+
+
+
+
+
+import { InMemoryCache } from "apollo-cache-inmemory";
+import ApolloClient from "apollo-client";
+import { split } from "apollo-link";
+import { setContext } from "apollo-link-context";
+import { HttpLink } from "apollo-link-http";
+// Setup the network "links"
+import { WebSocketLink } from "apollo-link-ws";
+import { getMainDefinition } from "apollo-utilities";
+import { ApolloProvider } from "react-apollo-hooks";
+import React from "react";
+import ReactDom from "react-dom";
+
+import { Posts } from "./Posts";
+
+const httpLink = new HttpLink({
+  uri: "https://realtime-chat.demo.hasura.app/v1/graphql"
+});
+
+// Create a WebSocket link:
+const wsLink = new WebSocketLink({
+  uri: "wss://realtime-chat.demo.hasura.app/v1/graphql",
+  options: {
+    reconnect: true,
+    connectionParams: { headers: { "X-Hasura-access-key": "HASH" } }
+  }
+});
+
+const authLink = setContext((_, { headers }) => {
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      "X-Hasura-access-key": "HASH"
+    }
+  };
+});
+
+const link = split(
+  // split based on operation type
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query);
+    return kind === "OperationDefinition" && operation === "subscription";
+  },
+  wsLink,
+  httpLink
+);
+
+const client = new ApolloClient({
+  link: authLink.concat(link),
+  cache: new InMemoryCache()
+});
+
+function App() {
+  return (
+    <ApolloProvider client={client}>
+      <div className="App">
+        <Posts />
+      </div>
+    </ApolloProvider>
+  );
+}
+
+ReactDom.render(<App />, document.getElementById("app"));
+
+
+import * as React from "react";
+import { render } from "react-dom";
+import { ApolloProvider, Query } from "react-apollo";
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
+import { onError } from "apollo-link-error";
+import { ApolloLink } from "apollo-link";
+import gql from "graphql-tag";
+import { WebSocketLink } from "apollo-link-ws";
+import "./styles.css";
+
+let uri = "6z2310j19z.sse.codesandbox.io/graphql";
+
+// const link = new HttpLink({ uri: `https://${uri}` });
+
+const link = new WebSocketLink({
+  uri: `wss://${uri}`,
+  options: {
+    reconnect: true
+  }
+});
+
+const cache = new InMemoryCache();
+
+const client = new ApolloClient({
+  cache,
+  link
+});
+
+const query = gql`
+  query getHello {
+    hello
+  }
+`;
+
+function App() {
+  return (
+    <ApolloProvider client={client}>
+      <h1>Hello Apollo Websocket Dev!</h1>
+      <Query query={query}>
+        {({ loading, error, data }) => {
+          if (loading) return <p>Loading...</p>;
+          if (error) return <p>Error :(</p>;
+
+          return (
+            <div>
+              <h3>Response: </h3>
+              <p>Score: {data.hello}</p>
+            </div>
+          );
+        }}
+      </Query>
+    </ApolloProvider>
+  );
+}
+
+const rootElement = document.getElementById("root");
+render(<App />, rootElement);
+
+
+
+
+import React from "react";
+import ReactDOM from "react-dom";
+import { ApolloClient } from "apollo-client";
+
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
+import { ApolloProvider, Query } from "react-apollo";
+import { setContext } from "apollo-link-context";
+import gql from "graphql-tag";
+
+// This is your average React Component just querying GraphQL
+// the only difference is you need to add "@client" to any
+// piece of query data that is coming from local state
+function App() {
+  const GET_POKEMONS = gql(`
+    query {
+      elementlists {
+        blocks
+        raw_text
+        job_id
+      }
+    }
+  `);
+
+  const renderContent = ({ loading, error, data }) => {
+    if (loading) return <h4>Loading...</h4>;
+    if (error) return <h4>Error...</h4>;
+
+    return (
+      <div className="App">
+        <h1>Hello {data.job_id}</h1>
+        <h2>These are your elementlists</h2>
+        <ul>
+          {data.elementlists.map(pokemon => (
+            <li key={pokemon.job_id}>{pokemon.job_id}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  return <Query query={GET_POKEMONS}>{renderContent}</Query>;
+}
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  // const token = localStorage.getItem('token');
+  const token =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6InVzZXIiLCJ4LWhhc3VyYS1hbGxvd2VkLXJvbGVzIjpbInVzZXIiXSwieC1oYXN1cmEtdXNlci1pZCI6ImF1dGgwfDVmMTNiMDQ1ZmZiNTA3MDAxOWRlZjliMyIsIngtaGFzdXJhLWNpcnJ1cy11c2VyLWlkIjoiMjUiLCJ4LWhhc3VyYS1jaXJydXMtZW50ZXJwcmlzZS1pZCI6IjI1In0sIm5pY2tuYW1lIjoiaGFyaXN0ZXN0and0IiwibmFtZSI6ImhhcmlzdGVzdGp3dEBjaWVsbzI0LmNvbSIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8yNmE0ZTNjMDRiOWZlZTk4YzMxYzRjZDIyODBlZmNhMj9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmhhLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDIwLTA3LTE5VDAyOjMyOjQyLjEzM1oiLCJpc3MiOiJodHRwczovL2NpZWxvMjQuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmMTNiMDQ1ZmZiNTA3MDAxOWRlZjliMyIsImF1ZCI6ImlYeno0UnVvSnVRaDExaGNFeDRjeFJCekpQV2xQMm9DIiwiaWF0IjoxNTk1MTI1OTYyLCJleHAiOjE1OTUxNjE5NjJ9.WMkRDgEfKimN9de-t8jZQ0qefe2ZOJOocC8eLMzuT0LR9qKoV6R-xoB_aKi8ZHsQa-PeGmtEkM7v9PSlE2JBX6goY5JVx2aiemZpP44PaiRcyDFVc4o_gerhPMP9nMHKaajpa7ZxOn5d6H9xinJ9D6LWcXTcpC7zVBHaxL7NRbMGofbGNnQWTC9ZW9Zty4pUTTlbVA4O1jTJ2mA9uQYF5WysEOybGzTqhcJjEAtix19LruvueI-rtAFNif74YljclBUL8y9W0hcMY23wCkhOCOghgQ45V1uEJpqobExFGQVGQqLflerhGjAb3ZfTfXeOYiAUK1BPputeYskBeuWuC6CDdyajGvA85GaSr9fO6gua7pdQjOK2kIjQjgHIR6ZaKF8uGGFP-3M6mjvmR3xkNXQlI2qTAJ02Xtr1-97QPUDSlTQC2bK4DPLMAI8-Ixz8bWnHhQ-FQEvab8ttmpc99n5scZnAYWuci2hrsOAQs2RK7dLPUWA9fDqRqhAXtTy9kVelyVYUE169uPcIJbmbTv9b_BN5tmdYFbUwuTJkJ7ngqdq0zkuzmONtLY45tHMONRC48KP-JfhN22nTAnNxmhi4qKiz6vsf3_r_D2OdDwHssxc_Eki_2kS_9mgnKxU0DxPFrgkaUJZYvrGUXLNZeTYacRn8WDuWr5fWoHG9DFQ";
+
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ""
+    }
+  };
+});
+
+// You can define resolvers + typeDefs and/or link
+// they do not depend on each other.
+// When you add resolvers + typeDefs you're just
+// extending your remote GraphQL API with one that
+// is defined locally
+let httpLink = new HttpLink({
+    uri: "https://cosmic-ringtail-61.hasura.app/v1/graphql"
+  }),
+  authedLink = authLink.concat(httpLink);
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authedLink,
+  resolvers: {
+    Query: {
+      user: () => ({ __typename: "User", job_id: "Trainer" })
+    }
+  },
+  typeDefs: `
+    type Query {
+      elementlists {
+        blocks
+        raw_text
+        job_id
+      }
+    }
+  `
+});
+
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
+  document.getElementById("root")
+);
+
+
+https://github.com/amplitude/react-amplitude
+
+
+
+
+
+
+import React from "react";
+import ReactDOM from "react-dom";
+import { ApolloClient } from "apollo-client";
+
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
+import { ApolloProvider, Query } from "react-apollo";
+import { setContext } from "apollo-link-context";
+import gql from "graphql-tag";
+
+import ReactPlayer from "react-player/youtube";
+import { Grid, Tab, Tabs, Footer, Anchor} from "grommet";
+import Box from "ui-box";
+import { Container, Row, Col, Media, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText } from 'reactstrap';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import { Button, Text, Pane, SideSheet } from 'evergreen-ui'
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+// This is your average React Component just querying GraphQL
+// the only difference is you need to add "@client" to any
+// piece of query data that is coming from local state
+function App() {
+  const GET_POKEMONS = gql(`
+    query {
+      elementlists {
+        job_id
+      }
+    }
+  `);
+
+  const renderContent = ({ loading, error, data }) => {
+    if (loading) return <h4>Loading...</h4>;
+    if (error) return <h4>Error...</h4>;
+
+    return (
+      <div className="App">
+
+        <Container>
+              <Row>
+
+
+
+      <SideSheet
+        isShown={true}
+        onCloseComplete={() => console.log(this)}
+      >
+        <Text margin={40}>Basic Example</Text>
+      </SideSheet>
+      <Button onClick={() => this.setState({ isShown: true })}>
+        Show Basic Side Sheet
+      </Button>
+
+
+                <Col xs="7" md="7" lg="7">
+                      <Box gridArea="video" background="brand">
+                      <ReactPlayer
+                        gridArea="main"
+
+                        styles={{ marginBottom: 10 }}
+                        url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
+                      />
+                    </Box>
+                </Col>
+
+                <Col xs="5" md="5" lg="5">
+                      <Box gridArea="video" background="brand">
+                      <ListGroup>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <Row xs="10" md="10" lg="10">
+                          <Col xs="12" md="12" lg="12">Transcription</Col>
+                          <Col xs="12" md="12" lg="12">Select this option to convert speech in your video to text. The final product can be turned into a variety of closed-caption and subtitle formats.</Col>
+                        </Row>
+                        <Row xs="2" md="2" lg="2">
+                          <Col xs="12" md="12" lg="12">
+                            <button id="ViewDetailsTooltip6" class="btn btn-neutral-dark btn-sm"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-right" class="svg-inline--fa fa-arrow-right fa-w-14 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"></path></svg></button>
+                          </Col>
+                        </Row>
+                      </li>
+
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <Row xs="10" md="10" lg="10">
+                          <Col xs="12" md="12" lg="12">Metadata</Col>
+                          <Col xs="12" md="12" lg="12">Metadata includes topics and keywords mentioned, brands, scene changes and people.</Col>
+                        </Row>
+                        <Row xs="2" md="2" lg="2">
+                          <Col xs="12" md="12" lg="12">
+                            <button id="ViewDetailsTooltip6" class="btn btn-neutral-dark btn-sm"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-right" class="svg-inline--fa fa-arrow-right fa-w-14 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"></path></svg></button>
+                          </Col>
+                        </Row>
+                      </li>
+
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <Row xs="10" md="10" lg="10">
+                          <Col xs="12" md="12" lg="12">Translation</Col>
+                          <Col xs="12" md="12" lg="12">Translate the speech from your video from one language to another</Col>
+                        </Row>
+                        <Row xs="2" md="2" lg="2">
+                          <Col xs="12" md="12" lg="12">
+                            <button id="ViewDetailsTooltip6" class="btn btn-neutral-dark btn-sm"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-right" class="svg-inline--fa fa-arrow-right fa-w-14 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"></path></svg></button>
+                          </Col>
+                        </Row>
+                      </li>
+                        {/* <ListGroupItem active>
+                          <ListGroupItemHeading>Transcription</ListGroupItemHeading>
+                          <ListGroupItemText>
+                          Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+                          </ListGroupItemText>
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          <ListGroupItemHeading>Metadata</ListGroupItemHeading>
+                          <ListGroupItemText>
+                          Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+                          </ListGroupItemText>
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          <ListGroupItemHeading>Translation</ListGroupItemHeading>
+                          <ListGroupItemText>
+                          Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+                          </ListGroupItemText>
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          <ListGroupItemHeading>Audio Description</ListGroupItemHeading>
+                          <ListGroupItemText>
+                          Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+                          </ListGroupItemText>
+                        </ListGroupItem> */}
+                      </ListGroup>
+                    </Box>
+                </Col>
+              </Row>
+              <Row className='mt-5'>
+                <Col xs="5" md="5" lg="5">
+
+                <Box
+              gridArea="caption"
+              direction="row"
+              pad="medium"
+            >
+                      <ListGroup>
+                        <ListGroupItem>
+                          <ListGroupItemText>
+                          Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+                          </ListGroupItemText>
+                        </ListGroupItem>
+                      </ListGroup>
+            </Box>
+
+                </Col>
+                <Col xs="7" md="7" lg="7">
+                
+                <Box gridArea="metadata"> 
+              <Tabs>
+                <Tab title="People">
+                <Box pad="medium">
+                  <Row>
+                  <Col style={{display: "inline", padding: 10}}>
+                    <Media object style={{borderRadius: 9999, margin:5}} src="https://placehold.it/48/48?text=unk1" alt="Generic placeholder image" />
+                    <Media object style={{borderRadius: 9999, margin:5}} src="https://placehold.it/48/48?text=unk1" alt="Generic placeholder image" />
+                    <Media object style={{borderRadius: 9999, margin:5}} src="https://placehold.it/48/48?text=unk1" alt="Generic placeholder image" />
+                  </Col>
+                  </Row>
+                  <Row>
+
+                  </Row>
+                </Box>
+                </Tab>
+                <Tab title="Topics">
+                <Box pad="medium">Topics</Box>
+                </Tab>
+                <Tab title="Keywords">
+                <Box pad="medium">Keywords</Box>
+                </Tab>
+                                <Tab title="Brands">
+                <Box pad="medium">Brands</Box>
+                </Tab>
+                <Tab title="Sentiment">
+                  <Box pad="medium">Sentiment</Box>
+                </Tab>
+                <Tab title="Scenes">
+                  <Box pad="medium">Scenes</Box>
+                </Tab>
+                </Tabs>
+            </Box>
+
+                </Col>
+              </Row>
+              </Container>
+
+
+      </div>
+    );
+  };
+  return <Query query={GET_POKEMONS}>{renderContent}</Query>;
+
+  // return <Query query={GET_POKEMONS}>{renderContent}</Query>;
+}
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  // const token = localStorage.getItem('token');
+  const token =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6InVzZXIiLCJ4LWhhc3VyYS1hbGxvd2VkLXJvbGVzIjpbInVzZXIiXSwieC1oYXN1cmEtdXNlci1pZCI6ImF1dGgwfDVmMTNiMDQ1ZmZiNTA3MDAxOWRlZjliMyIsIngtaGFzdXJhLWNpcnJ1cy11c2VyLWlkIjoiMjUiLCJ4LWhhc3VyYS1jaXJydXMtZW50ZXJwcmlzZS1pZCI6IjI1In0sIm5pY2tuYW1lIjoiaGFyaXN0ZXN0and0IiwibmFtZSI6ImhhcmlzdGVzdGp3dEBjaWVsbzI0LmNvbSIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8yNmE0ZTNjMDRiOWZlZTk4YzMxYzRjZDIyODBlZmNhMj9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmhhLnBuZyIsInVwZGF0ZWRfYXQiOiIyMDIwLTA3LTE5VDAyOjMyOjQyLjEzM1oiLCJpc3MiOiJodHRwczovL2NpZWxvMjQuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVmMTNiMDQ1ZmZiNTA3MDAxOWRlZjliMyIsImF1ZCI6ImlYeno0UnVvSnVRaDExaGNFeDRjeFJCekpQV2xQMm9DIiwiaWF0IjoxNTk1MTI1OTYyLCJleHAiOjE1OTU4MTU0NDd9.pJKw6nFPziKT2Bo8N5lEqnHJ0Y-_oH7L_fflgIsPHrwlNhasPEKhKwulXo7EfSPtAB0ZG8TpI4jdNwrSwjdY-i05UItXT-7rUyVqI40EhRho2V0J-VqxkY804skiIOo0iPCMUmWG2VXPgPx7ng9pJQgn4OUEOsN864MNgZBLMfNtGbiU0ZV6VWI4a1Gmro0LD-VTCmg-rVxjnKYgX-XLWEfTA97oewCpWGjDveA2ucBjI7F6iAWQuNtYqdSul7r1SNZMx6v3Jl-qzJauGOgRDBzl5Jj1RfqzCSP2KdZILTKN22vLgAPZzSCJP29nk4zuB9X2rMirBQ36_UNLGPAZRyPbhbHCzaOpBoh6GBKaiuzTtnTIcfVmEgK8Qwrc9mcSTkB2OvK_mINVyp9XgdliVuGiTqjXJQtdnX_8udqAuPXYQDbH7em-pO3Hh0hURlIQQWAJg-4JfM3dqGGHCJSdUuiT23rpn7ZxPRx5AWQSqfZW08knM47fMQMsl06o1CZZY3rmmA8nU5KHMU9Qb8GQvipDmfmjtOwkg1BHLNrUuE_iDVHIqst3A905LV_ejNFvQsmdljTzTdcgiT9EMqbZDP3wwFRpZrM6C7DvG3zOHvWaVgaHLp7EzQRLM8XjN6NOEct9bpd0fyzyP8Fpny6p-fqO7CI8YUPPjuf_QHmWtyw";
+
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ""
+    }
+  };
+});
+
+// You can define resolvers + typeDefs and/or link
+// they do not depend on each other.
+// When you add resolvers + typeDefs you're just
+// extending your remote GraphQL API with one that
+// is defined locally
+let httpLink = new HttpLink({
+    uri: "https://cosmic-ringtail-61.hasura.app/v1/graphql"
+  }),
+  authedLink = authLink.concat(httpLink);
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authedLink,
+  resolvers: {
+    Query: {
+      user: () => ({ __typename: "User", job_id: "Trainer" })
+    }
+  },
+  typeDefs: `
+    type Query {
+      elementlists {
+        job_id
+      }
+    }
+  `
+});
+
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
+  document.getElementById("root")
+);

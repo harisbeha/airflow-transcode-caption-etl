@@ -1,0 +1,59 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div class="vertical-menu">
+
+    <div class="h-100">
+
+        <div class="user-wid text-center py-4">
+            <div class="user-img">
+                <img src="https://placehold.it/200/200" alt="" class="avatar-md mx-auto rounded-circle">
+            </div>
+
+            <div class="mt-3">
+
+                <a href="#" class="text-dark font-weight-medium font-size-16">{{request.user}}</a>
+                <p class="text-body mt-1 mb-0 font-size-13">{{ request.user.role }}</p>
+
+            </div>
+        </div>
+
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <!-- Left Menu Start -->
+            <ul class="metismenu list-unstyled" id="side-menu">
+                <li class="menu-title">Media</li>
+
+                <li>
+                    <a href="/library" class=" waves-effect">
+                        <i class="fa fa-photo-video" style="margin-right: 10px;"></i>
+                        <span>Library</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/orders" class=" waves-effect">
+                        <i class="fa fa-receipt" style="margin-right: 10px;"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+
+                <li class="menu-title">Platform</li>
+
+                <li>
+                    <a href="/integrations" class=" waves-effect">
+                        <i class="fa fa-network-wired" style="margin-right: 10px;"></i>
+                        <span>Integrations</span>
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="-m-2 text-center pb-2" style="margin-top:10px;">
+                <a href="https://help.mydomain.com/en"><span class="inline-flex bg-blue-no-gradient text-white rounded-full h-6 px-3 justify-center items-center">Need Help?</span></a>
+            </div>
+
+              
+        </div>
+        <!-- Sidebar -->
+    </div>
+</div>
+<!-- Left Sidebar End -->

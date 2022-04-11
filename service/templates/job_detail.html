@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <meta charset="utf-8">
+    <title>{{ entry.title }} | MyApp by MyDomain </title>
+    <link rel="stylesheet" href="https://storage.googleapis.com/cirrus-static-assets/css/hyperaudio-lite-player.css">
+    <link rel="stylesheet" href="https://storage.googleapis.com/cirrus-static-assets/css/share-this.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.js"></script>
+    <script src="https://platform.twitter.com/widgets.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+<div class="col-md-6 col-xl-3">
+    <!-- Simple card -->
+    <div class="card">
+  <!-- Comment out the following line if you are using an alternative player. ie SoundCloud or YouTube -->
+  <!-- <video id="hyperplayer" style="z-index: 5000000; position:relative; width:400px" src="https://lab.hyperaud.io/video/BBC/education.mp4" type="audio/mp4" controls></video> -->
+
+  <!-- Uncomment the following lines for SoundCloud compatibility. Keep commented if you are using native or YouTube -->
+  <!-- iFrame HTML can be found by clicking the embed button while viewing the audio on SoundCloud -->
+  <!-- <script src="https://w.soundcloud.com/player/api.js"></script>
+  <iframe id="hyperplayer" data-player-type="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" 
+        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
+  </iframe> -->
+
+  {% if entry.integration_source == "YouTube" %}
+  <!-- Uncomment the following lines for YouTube compatibility. Keep commented if you are using native or YouTube -->
+  <iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
+    src="https://www.youtube.com/embed/{{entry.external_id}}?enablejsapi=1">
+  </iframe>
+  {% endif %}
+</div>
+</div>
+</div>
+
+<div class="row">
+    <form id="searchForm" style="float:right">
+        <!-- comment out the following line if you don't need playback rate controls -->
+        <span id="currentPbr">1</span><input id="pbr" type="range" value="1" min="0.5" max="3" step="0.1" style="width:10%">
+        <input id="search" type="text" ><input type="submit" value="search">
+    </form>
+</div>
+
+<div class="row">
+    {% if interactive_transcript %}
+    <div class="card">
+        <div id="hypertranscript" style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
+            {{ interactive_transcript | safe }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+
+
+  <script src="https://storage.googleapis.com/cirrus-static-assets/js/hyperaudio-lite.js"></script>
+  <script src="https://storage.googleapis.com/cirrus-static-assets/js/hyperaudio-lite-wrapper.js"></script>
+  <script src="https://storage.googleapis.com/cirrus-static-assets/js/share-this.js"></script>
+  <script src="https://storage.googleapis.com/cirrus-static-assets/js/share-this-twitter.js"></script>
+  <script src="https://storage.googleapis.com/cirrus-static-assets/js/all.js"></script>
+  <script>
+  ShareThis({
+      sharers: [ ShareThisViaTwitter, ShareThisViaFacebook, ShareThisViaReddit, ShareThisViaLinkedIn, ShareThisViaEmail ],
+      selector: "article"
+  }).init();
+  </script>
+  <!-- Uncomment the following script if you require IE versions less than 10 to be supported or Opera Mini http://caniuse.com/#search=classlist ¯\_(ツ)_/¯ -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script> -->
+    </div>
+
+</div>
+
+{% endblock %}

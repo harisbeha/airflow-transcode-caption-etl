@@ -1,0 +1,234 @@
+
+<head>
+
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet">
+	<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.js" integrity="sha256-r/AaFHrszJtwpe+tHyNi/XCfMxYpbsRg2Uqn0x3s2zc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/fontawesome.min.js" integrity="sha256-NP9NujdEzS5m4ZxvNqkcbxyHB0dTRy9hG13RwTVBGwo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;700&display=swap" rel="stylesheet">
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <link rel="shortcut icon" href="https://storage.googleapis.com/cirrus-static-assets/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="https://storage.googleapis.com/cirrus-static-assets/favicon.ico" type="image/x-icon">
+
+  {% block title %}
+    <title>
+      $1.00/min Captions - Subtitles | MyApp by MyDomain
+    </title>
+  {% endblock %}
+
+
+
+  <script>
+    !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var t=analytics.methods[e];analytics[t]=analytics.factory(t)}analytics.load=function(e,t){var n=document.createElement("script");n.type="text/javascript";n.async=!0;n.src="https://cdn.segment.com/analytics.js/v1/"+e+"/analytics.min.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(n,a);analytics._loadOptions=t};analytics.SNIPPET_VERSION="4.1.0";
+    analytics.load("kpTWF9z7mVQ1VaiYVp9lv6uUNoAuLdap");
+    analytics.page();
+    }}();
+
+    analytics.identify("{{request.user.id}}", {
+    name: "{{request.user.first_name}} {{request.user.last_name}}",
+    email: "{{request.user.email}}",
+  });
+  </script>
+
+  <script>
+    window.intercomSettings = {
+      app_id: "oe4rcbob",
+      name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+      email: "{{ request.user.email }}",
+    };
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BEW76RK6EH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BEW76RK6EH');
+</script>
+  
+  <script>
+  // We pre-filled your app ID in the widget URL: 'https://widget.intercom.io/widget/oe4rcbob'
+  (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/oe4rcbob';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+  </script>
+
+	<style>
+		[x-cloak] {
+			display: none;
+		}
+		body {
+			font-family: 'Poppins', sans-serif !important;
+		}
+
+    .bg-blue-color {
+      background: #3a79ef;
+      background-repeat: repeat-x;
+      background-image: -webkit-linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -o-linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -webkit-linear-gradient(315deg,#3a79ef,#184cad);
+      background-image: -o-linear-gradient(315deg,#3a79ef,#184cad);
+      background-image: linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -webkit-linear-gradient(315deg,#3a79ef,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad);
+      background-image: -o-linear-gradient(315deg,#3a79ef 0,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad 100%);
+      background-image: linear-gradient(135deg,#3a79ef,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad);
+}
+
+.bg-blue-gradient {
+      background: #3a79ef;
+      background-repeat: repeat-x;
+      background-image: -webkit-linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -o-linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -webkit-linear-gradient(315deg,#3a79ef,#184cad);
+      background-image: -o-linear-gradient(315deg,#3a79ef,#184cad);
+      background-image: linear-gradient(135deg,#3a79ef,#184cad);
+      background-image: -webkit-linear-gradient(315deg,#3a79ef,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad);
+      background-image: -o-linear-gradient(315deg,#3a79ef 0,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad 100%);
+      background-image: linear-gradient(135deg,#3a79ef,#316dde 19%,#2a64d1 34%,#255dc6 47%,#2159bf 56.5%,#1f55ba 65%,#1c52b5 73%,#1b4fb2 80.2%,#194eb0 86.1%,#194dae 91%,#184cae 95.2%,#184cad 98.2%,#184cad);
+}
+
+.bg-blue-no-gradient {
+      background: #3a79ef;
+}
+
+.active-text-color{
+  color: #ef833a !important;
+}
+
+  </style>
+  
+</head>
+
+<body class="antialiased bg-gray-200">
+
+    <div class="font-sans bg-grey-lighter flex flex-col min-h-screen w-full">
+
+          <div class="bg-blue-color">
+            <div class="container mx-auto px-4">
+              <div class="flex items-center md:justify-between py-4">
+                <div class="w-1/4 md:hidden">
+                  <svg class="fill-current text-white h-8 w-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M16.4 9H3.6c-.552 0-.6.447-.6 1 0 .553.048 1 .6 1h12.8c.552 0 .6-.447.6-1 0-.553-.048-1-.6-1zm0 4H3.6c-.552 0-.6.447-.6 1 0 .553.048 1 .6 1h12.8c.552 0 .6-.447.6-1 0-.553-.048-1-.6-1zM3.6 7h12.8c.552 0 .6-.447.6-1 0-.553-.048-1-.6-1H3.6c-.552 0-.6.447-.6 1 0 .553.048 1 .6 1z"/></svg>
+                </div>
+                <div class="w-1/2 md:w-auto text-center text-white text-2xl font-medium">
+                  <img src="https://storage.googleapis.com/cirrus-static-assets/logo.png?lol=tako" style="height: 40px; width: 200px"/>
+                </div>
+
+                <div class="w-1/4 md:w-auto md:flex text-right" style="max-height: 1rem">
+                  <div class="md:block md:flex md:items-center ml-2">
+                    
+                    <div id="app" class="antialiased font-sans">
+                      <!-- This empty div is only for demo purposes and it's used so you can close the menu on a touchscreen device. Normally you'd handle it differently by not using hover states on mobile, but by using real clicks. -->
+                      <!-- <div class="fixed inset-0" @click="isVisible = false"></div> -->
+                      <div class="relative inline-block" @mouseover="isVisible = true" @mouseleave="isVisible = false" @keydown.enter="isVisible = !isVisible">
+                        <img class="inline-block h-12 w-12 rounded-full" src="https://placehold.it/64/64" alt="User Avatar">
+                        <button type="button" class="inline-flex items-center justify-between px-2 py-1 font-medium text-white transition-all duration-500 rounded-md focus:outline-none focus:text-brand-900 sm:focus:shadow-outline">
+                          <span class="flex-shrink-0 text-white">{{ request.user.email }}</span>
+                          <svg fill="currentColor" viewBox="0 0 20 20" class="flex-shrink-0 w-5 h-5 ml-1">
+                            <path :class="{ 'rotate-180': isVisible }" class="transition duration-300 ease-in-out origin-center transform" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                          </svg>
+                        </button>
+                        <transition enter-active-class="transition duration-300 ease-out transform" enter-class="-translate-y-3 scale-95 opacity-0" enter-to-class="translate-y-0 scale-100 opacity-100" leave-active-class="transition duration-150 ease-in transform" leave-class="translate-y-0 opacity-100" leave-to-class="-translate-y-3 opacity-0">
+                          <div v-show="isVisible" class="absolute pt-2">
+                            <div class="relative py-1 bg-white border border-gray-200 rounded-md shadow-xl">
+                              <div class="absolute top-0 w-4 h-4 origin-center transform rotate-45 translate-x-5 -translate-y-2 bg-white border-t border-l border-gray-200 rounded-sm pointer-events-none"></div>
+                              <div class="relative">
+                                <a href="/payment" class="block w-full px-4 py-2 font-medium text-gray-700 whitespace-no-wrap hover:bg-gray-100 focus:outline-none hover:text-gray-900 focus:text-gray-900 focus:shadow-outline transition duration-300 ease-in-out"><span class="fa fa-money-check-alt"></span> Payment</a>
+                                <a href="/settings" class="block w-full px-4 py-2 font-medium text-gray-700 whitespace-no-wrap hover:bg-gray-100 focus:outline-none hover:text-gray-900 focus:text-gray-900 focus:shadow-outline transition duration-300 ease-in-out"><span class="fa fa-user-cog"></span> Settings</a>
+                              </div>
+                            </div>
+                          </div>
+                        </transition>
+                      </div>
+                    </div>
+                    <!-- <div>
+                      <svg class="fill-current text-white h-4 w-4 block opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M4.516 7.548c.436-.446 1.043-.481 1.576 0L10 11.295l3.908-3.747c.533-.481 1.141-.446 1.574 0 .436.445.408 1.197 0 1.615-.406.418-4.695 4.502-4.695 4.502a1.095 1.095 0 0 1-1.576 0S4.924 9.581 4.516 9.163c-.409-.418-.436-1.17 0-1.615z"/></svg>
+                    </div> -->
+                  </div>
+
+
+
+
+
+                  {% if not has_cart %}
+                    <div class="hidden md:block md:flex md:items-center ml-2">
+                      <a href="/cart-preview"><span class="text-white text-sm mr-1 fa fa-cart-plus"></span></a>
+                      <!-- <div>
+                        <svg class="fill-current text-white h-4 w-4 block opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M4.516 7.548c.436-.446 1.043-.481 1.576 0L10 11.295l3.908-3.747c.533-.481 1.141-.446 1.574 0 .436.445.408 1.197 0 1.615-.406.418-4.695 4.502-4.695 4.502a1.095 1.095 0 0 1-1.576 0S4.924 9.581 4.516 9.163c-.409-.418-.436-1.17 0-1.615z"/></svg>
+                      </div> -->
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="hidden bg-blue-dark md:block md:bg-white md:border-b shadow">
+            <div class="container mx-auto px-4">
+              <div class="md:flex">
+
+                <div class="flex -mb-px mr-8">
+                  <a href="/library" class="no-underline text-white md:text-blue-600 flex items-center py-4 border-b border-blue-dark active:bg-blue-700 text-white {% if request.path == "/library" %} active-text-color {% endif %}">
+                    <span class="fa fa-photo-video mr-2 {% if request.path == "/library" %} active-text-color {% endif %}"></span><span class="tab-link {% if request.path == "/library" %} active-text-color {% endif %}">Media Library</span>
+                  </a>
+                </div>
+                <div class="flex -mb-px mr-8">
+                  <a href="/orders" class="no-underline text-white md:text-blue-600 flex items-center py-4 border-b border-blue-dark">
+                    <span class="fa fa-receipt mr-2 {% if request.path == "/orders" %} active-text-color {% endif %}"></span><span class="tab-link {% if request.path == "/orders" %} active-text-color {% endif %}">Orders</span>
+                  </a>
+                </div>
+                <div class="flex -mb-px mr-8">
+                  <a href="/integrations" class="no-underline text-white opacity-100 md:text-blue-600 md:opacity-100 flex items-center py-4 border-b border-transparent hover:opacity-100 md:hover:border-grey-dark">
+                    <span class="fa fa-exchange-alt mr-2 {% if request.path == "/integrations" %} active-text-color {% endif %}"></span><span class="tab-link {% if request.path == "/integrations" %} active-text-color {% endif %}">Integrations</span>
+                  </a>
+                </div>
+                <!-- <div class="flex -mb-px mr-8">
+                  <a href="/plans" class="no-underline text-white opacity-100 md:text-blue-600 md:opacity-100 flex items-center py-4 border-b border-transparent hover:opacity-100 md:hover:border-grey-dark">
+                    <span class="fa fa-money-check-alt mr-2"></span><span>Payment</span>
+                  </a>
+                </div>
+                <div class="flex -mb-px mr-8">
+                  <a href="/settings" class="no-underline text-white opacity-50 md:text-blue-600 md:opacity-100 flex items-center py-4 border-b border-transparent hover:opacity-100 md:hover:border-grey-dark">
+                    <span class="fa fa-user-cog mr-2"></span><span>Settings</span>
+                  </a>
+                </div> -->
+                
+                <!-- <div class="flex -mb-px mr-8">
+                  <a href="/accounts/logout" class="no-underline text-white opacity-50 md:text-blue-600 md:opacity-100 flex items-center py-4 border-b border-transparent hover:opacity-100 md:hover:border-grey-dark">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Log Out
+                  </a>
+                </div> -->
+
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 10px; min-height:100vh">
+            {% block content %}
+
+
+            {% endblock %}
+          </div>
+
+          <div>
+            {% include "footer.html" %}
+          </div>
+          
+
+
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+      <script>
+        var app = new Vue({
+          el: '#app',
+          data: {
+            isVisible: false
+          }
+        })
+      </script>
+
+      {{ form.media.js }}
+</body>

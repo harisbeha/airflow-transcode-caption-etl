@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% include "integrations/youtube/youtube_feed_card.html" with feed_type="Video Search" help_text=True import_link="/integrations/youtube/import" %} 
+    {% include "integrations/youtube/youtube_feed_card.html" with feed_type="Channel" import_link="/integrations/youtube/import" %} 
+    {% include "integrations/youtube/youtube_feed_card.html" with feed_type="Playlist" import_link="/integrations/youtube/import" %} 
+
+{% endblock %}

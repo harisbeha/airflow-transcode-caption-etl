@@ -1,0 +1,21 @@
+<div class="max-w-sm rounded-lg overflow-hidden shadow-lg bg-white m-3 text-center">
+    <div class="flex flex-col min-h-full">
+      <!-- <div class="pt-6 flex justify-center">
+        <img src="https://storage.googleapis.com/cirrus-static-assets/youtube_logo.png" alt="" class="h-16 w-48 rounded-lg">
+      </div> -->
+  <div class="px-6 py-6 flex-grow">
+  <div class="text-gray-700 font-medium text-xl mb-2">{{ feed_type }}</div>
+
+  {% if help_text %}
+    <span class="text-blue-500 block mb-5">Unsure? Select this one.</span>
+  {% endif %}
+  </div>
+  <div class="px-6 py-4 border-t">
+  <div class="flex flex-row justify-center">
+    <div class="flex flex-row items-center">
+      <a href="{{import_link}}" class="px-4 py-2 bg-blue-500 text-white rounded-full">Go</a>
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>

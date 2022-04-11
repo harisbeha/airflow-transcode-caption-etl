@@ -1,0 +1,76 @@
+ {% extends "base.html" %}
+ {% load render_table from django_tables2 %}
+
+ {% block content %}
+
+ {% block data %}
+
+ <div class="-m-2 text-center pb-2">
+   <div class="p-2">
+     <div class="inline-flex items-center bg-white leading-none text-orange-600 rounded-full p-2 shadow text-teal text-sm">
+       <span class="inline-flex bg-orange-500 text-white rounded-full h-6 px-3 justify-center items-center">Need Help?</span>
+       <span class="inline-flex px-2"> Click here to launch an interactive guide to getting started</span>
+     </div>
+   </div>
+ </div>
+ 
+ <div class="flex justify-center px-3 my-12">
+   
+   <!-- Row -->
+   <div class="w-full xl:full lg:w-11/12 flex">
+     <!-- Col -->
+     <div class="my-8">
+     <form class="max-w-lg m-4 p-4 bg-white rounded shadow-xl">
+       <div class="">
+         <label class="block text-sm text-gray-600" for="id_name">Name contains</label>
+         <input class="w-full px-2 py-2 text-gray-700 bg-gray-200 rounded" id="id_name" name="id_name" type="text" aria-label="Name">    
+       </div>
+       <div class="mt-2">
+         <label class=" block text-sm text-gray-600" for="id_order_type">Order Type</label>
+         <select name="status" id="id_status" class="w-full px-2 py-2 text-gray-700 bg-gray-200 rounded w-full block appearance-none bg-white border border-gray-500 rounded text-gray-800 py-1 px-4 pr-8"> <option value="" selected="">---------</option> <option value="PENDING">PENDING</option> </select> 
+       </div>
+       <div class="">
+         <label class="block text-sm text-gray-600" for="id_status">Order Status</label>
+         <select name="status" id="id_status" class="w-full px-2 py-2 text-gray-700 bg-gray-200 rounded w-full block appearance-none bg-white border border-gray-500 rounded text-gray-800 py-1 px-4 pr-8"> <option value="" selected="">---------</option> <option value="PENDING">PENDING</option> </select> 
+       </div>
+       <div class="mt-2">
+         <label class="block text-sm text-gray-600" for="id_source">Source</label>
+         <select name="status" id="id_status" class="w-full px-2 py-2 text-gray-700 bg-gray-200 rounded w-full block appearance-none bg-white border border-gray-500 rounded text-gray-800 py-1 px-4 pr-8"> <option value="" selected="">---------</option> <option value="PENDING">PENDING</option> </select> 
+         
+       </div>
+       <div class="mt-2">
+         <label class=" block text-sm text-gray-600" for="date_added_filter">Date Added</label>
+         <select name="status" id="id_status" class="w-full px-2 py-2 text-gray-700 bg-gray-200 rounded w-full block appearance-none bg-white border border-gray-500 rounded text-gray-800 py-1 px-4 pr-8"> <option value="" selected="">---------</option> <option value="PENDING">PENDING</option> </select> 
+       </div>
+   <center>
+       <div class="mt-4">
+         <button class="px-4 py-1 text-white font-light tracking-wider bg-orange-500 rounded" type="submit">Filter</button>
+       </div>
+       </center>
+     </form>
+   </div>
+ 
+     <!-- Col -->
+     <div class="w-full lg:w-full p-1 rounded-lg lg:rounded-l-none">
+ 
+     <form action="." method="POST">
+       <button class="no-underline px-1 py-1 my-2 bg-white text-center text-base text-white bg-orange-500 border border-orange-500 rounded shadow float-right" type="submit">Import Selected</button>
+ 
+       <div class="w1/3 rounded-lg">
+           {% csrf_token %}
+           {% render_table table %}
+         </form>
+       </div>
+ 
+     </div>
+   </div>
+ </div>
+ </div>
+ 
+ 
+ </div>
+ 
+ {% endblock %}
+
+
+{% endblock %}

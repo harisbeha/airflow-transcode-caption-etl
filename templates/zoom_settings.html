@@ -1,0 +1,528 @@
+{% block head_css %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datepicker.css">
+<style>
+    .icon-arrow-right {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        line-height: 14px;
+        vertical-align: text-top;
+        background-image: url(static/img/glyphicons-halflings.png);
+        background-position: 14px 14px;
+        background-repeat: no-repeat;
+        background-position: -264px -96px;
+    }
+
+    .icon-arrow-left {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        line-height: 14px;
+        vertical-align: text-top;
+        background-image: url(static/img/glyphicons-halflings.png);
+        background-position: 14px 14px;
+        background-repeat: no-repeat;
+        background-position: -240px -96px;
+    }
+
+    .address-container {
+      overflow: hidden;
+    }
+
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .notification-label {
+      height: 2.6rem;
+      position: relative;
+    }
+
+    .notification-label > label {
+      position: absolute;
+      bottom: 0;
+    }
+</style>
+{% endblock head_css %}
+
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#account-info" data-toggle="tab">Account Info</a></li>
+  <li><a href="#credentials" data-toggle="tab">Credentials</a></li>
+  <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
+  <li><a href="#usage" data-toggle="tab">Usage</a></li>
+
+  {% if send_notes_as_glossary %}
+  <li><a href="#glossary" data-toggle="tab">Glossary</a></li>
+  {% endif %}
+
+  {% if user.userdata.contract_administrator %}
+  <li><a href="#contracts" data-toggle="tab">Contracts</a></li>
+  {% endif %}
+</ul>
+
+<div class="tab-content panel-body">
+  <div class="tab-pane active" id="account-info">
+    <form class="form-horizontal panel panel-default" role="form">
+      <div class="panel-body">
+          {%  if master_username and master_email %}
+              <h3>Parent Account Contact:</h3>
+              <div class="form-group">
+                <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="master_username_input">
+                    Username: <i id="masterUserNamePopover"
+                                 class="fa fa-question-circle"
+                                 data-toggle="tooltip"
+                                 data-container="body"
+                                 data-placement="top"
+                                 data-content="If you want to change your<br/>username, please contact <a href='/support'>Support</a>"></i>
+              </label>
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                  <input type="text" class="form-control" id="master_username_input" value="{{ master_username }}" readonly>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-2 col-md-3 col-sm-4 control-label">Email:</label>
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                  <input type="text" class="form-control" value="{{ master_email }}" readonly>
+                </div>
+              </div>
+              <br/>
+              <h3>Sub-Account Credentials:</h3>
+          {% endif %}
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="username_input">
+                Username: <i id="userNamePopover"
+                             class="fa fa-question-circle"
+                             data-toggle="tooltip"
+                             data-container="body"
+                             data-placement="top"
+                             data-content="If you want to change your<br/>username, please contact <a href='/support'>Support</a>"></i>
+            </label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input type="text" class="form-control" id="username_input" value="{{ username }}" readonly>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="email_input">Email Address:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="email_input" type="text" class="form-control" value="{{ email }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="confirm_email_input">Confirm Email:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="confirm_email_input" type="text" class="form-control" value="{{ email }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="first_name_input">First Name:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="first_name_input" type="text" class="form-control" value="{{ first_name }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="last_name_input">Last Name:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="last_name_input" type="text" class="form-control" value="{{ last_name }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="address_name_input">Address Name:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="address_name_input" type="text" class="form-control" value="{{ address_name }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="address_line1_input">Address:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="address_line1_input" type="text" class="form-control" value="{{ address_line1 }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="address_line2_input">Apt #:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="address_line2_input" type="text" class="form-control" value="{{ address_line2 }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="international_code_input">International Code:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="international_code_input" type="text" class="form-control" value="{{ international_code }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="city_input">City:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="city_input" type="text" class="form-control" value="{{ city }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="state_input">State:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="state_input" type="text" class="form-control" value="{{ state }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="zip_input">Zip:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="zip_input" type="text" class="form-control" value="{{ zip }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="phone_number_input">Phone Number:</label>
+            <div class="col-lg-4 col-md-6 col-sm-8">
+              <input id="phone_number_input" type="text" class="form-control" value="{{ phone_number }}">
+            </div>
+          </div>
+
+          <input type="hidden" id="csrfmiddlewaretoken" value="{{ csrf_token }}">
+          <div class="col-lg-6 col-md-9 col-sm-12">
+              <button id="submit" type="submit" class="btn btn-success pull-right" data-toggle="button">Save Changes</button>
+          </div>
+
+      </div>
+    </form>
+  </div>
+  <div class="tab-pane" id="credentials">
+    <div class="row">
+        <div class="col-sm-6">
+            <form class="form-horizontal panel panel-default" role="form">
+              <div class="panel-body">
+                <h1>cielo24</h1>
+                <div class="form-group">
+                  <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="credential_username_input">
+                      Username: <i id="userNamePopover"
+                                   class="fa fa-question-circle"
+                                   data-toggle="tooltip"
+                                   data-container="body"
+                                   data-placement="top"
+                                   data-content="If you want to change your<br/>username, please contact <a href='/support'>Support</a>"></i>
+                  </label>
+                  <div class="col-lg-4 col-md-6 col-sm-8">
+                    <input type="text" class="form-control" id="credential_username_input" value="{{ username }}" readonly>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="newPassword">Change password:</label>
+                  <div class="col-lg-4 col-md-6 col-sm-8">
+                    <input id="newPassword" type="password" class="form-control">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-lg-2 col-md-3 col-sm-4 control-label" for="newConfirmPassword">Confirm password:</label>
+                  <div class="col-lg-4 col-md-6 col-sm-8">
+                    <input id="newConfirmPassword" type="password" class="form-control">
+                  </div>
+                </div>
+
+                <div class="col-lg-6 col-md-9 col-sm-12">
+                  <button type="button" class="btn btn-success pull-right" id="submit_password_change">Submit</button>
+                </div>
+              </div>
+            </form>
+        </div>
+
+    </div>
+    <div class="row">
+       <div class="col-sm-6">
+           <form id="existing_api_list" class="form-group panel panel-default hidden">
+           </form>
+        </div>
+    </div>
+    {% if google.is_authorized %}
+    <form class="form-horizontal panel panel-default" role="form" action="integration/google/revoke">
+      <div class="panel-body">
+        <h1>YouTube</h1>
+          <p>You authorized cielo24 to upload to the videos in the "{{google.name}}@youtube.com" YouTube account</p>
+          <div class="form-group">
+            <div class="col-lg-6 col-md-9 col-sm-12">
+              <button type="submit" class="btn btn-danger pull-right">Revoke</button>
+            </div>
+          </div>
+      </div>
+    </form>
+    {% else %}
+    <form class="form-horizontal panel panel-default" role="form">
+      <div class="panel-body">
+          <h1>YouTube</h1>
+          <p>Authorize cielo24 to upload captions to your YouTube videos on your behalf</p>
+          <div class="form-group">
+            <div class="col-lg-6 col-md-9 col-sm-12">
+              <a href="{{google.auth_url}}" role="button" class="btn btn-success pull-right">Authorize</a>
+            </div>
+          </div>
+      </div>
+    </form>
+    {% endif %}
+	  
+    {% if zoom.is_authorized %}
+    <form class="form-horizontal panel panel-default" role="form" action="integration/zoom/revoke">
+      <div class="panel-body">
+        <h1>Zoom</h1>
+          <p>You authorized cielo24 to manage meetings and webinars in the "{{zoom.name}}" Zoom account</p>
+          <div class="form-group">
+            <div class="col-lg-6 col-md-9 col-sm-12">
+              <button type="submit" class="btn btn-danger pull-right">Revoke</button>
+            </div>
+          </div>
+      </div>
+    </form>
+    {% else %}
+    <form class="form-horizontal panel panel-default" role="form">
+      <div class="panel-body">
+          <h1>Zoom</h1>
+          <p>Authorize cielo24 to ingest media and upload captions to your Zoom videos on your behalf</p>
+          <div class="form-group">
+            <div class="col-lg-6 col-md-9 col-sm-12">
+              <a href="{{zoom.auth_url}}" role="button" class="btn btn-success pull-right">Authorize</a>
+            </div>
+          </div>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+  <div class="tab-pane" id="notifications">
+    <form class="form-horizontal panel panel-default" role="form">
+      <div id="add_entry_panel" class="panel-body">
+        <div class="row">
+          <div class="col-xs-2 address-container">
+            <label class="nowrap" for="add_email_address_input">
+              Add an email address:
+            </label>
+            <input id="add_email_address_input" type="email" class="form-control">
+          </div>
+          <div class="col-xs-9">
+            <div class="row">
+              {% for notification_type, notification_type_human in notification_types %}
+              <div class="col-xs-2">
+                <label class="col-xs-12 notification-label text-center" for="{{ notification_type|lower }}_check">
+                  {{ notification_type_human }}
+                </label>
+                <div class="col-xs-12 text-center">
+                  <input id="{{ notification_type|lower }}_check"
+                        type="checkbox"
+                        class="centered-checkbox"
+                        data-type="{{ notification_type }}">
+                </div>
+                {% if notification_type in descendants_notification_types %}
+                <div class="col-xs-12 text-center">
+                  Descendants:
+                  <input id="{{ notification_type|lower }}_descendants"
+                        type="checkbox"
+                        class="centered-checkbox"
+                        data-type="{{ notification_type }}"
+                        disabled>
+                </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="col-xs-1">
+            <div class="row">
+              <div class="col-xs-12 text-center">
+                <label class="control-label">
+                    &nbsp; <!--for better vertical alignment-->
+                </label>
+              </div>
+              <div class="col-xs-12 text-center">
+                <button type="button" class="btn btn-success" id="add_notification_email">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <form id="existing_notification_list" class="form-horizontal panel panel-default hidden">
+    </form>
+  </div>
+
+  {% if send_notes_as_glossary %}
+
+  <div class="tab-pane" id="glossary">
+    <div class="row">
+      <div class="col-sm-6">
+        <form class="form-horizontal panel panel-default" role="form">
+          <div class="panel-body">
+            <h1>Glossary</h1>
+            <div>
+              <label for="default_job_notes">Add notes to aid in human transcription (i.e. Terms, Names, etc.)</label>
+              <textarea id="default_job_notes" class="form-control" rows="5" cols="30" title="Account Glossary"></textarea>
+            </div>
+            {% if enable_custom_vocabulary %}
+                <div>
+                  <label for="default_custom_vocabulary">Add custom vocabulary to aid in ASR transcription (i.e. gnocchi: nokey)</label>
+                  <textarea id="default_custom_vocabulary" class="form-control" rows="5" cols="30" title="Custom Vocabulary"></textarea>
+                </div>
+            {% endif %}
+            <div>
+              <button type="button" class="btn btn-success pull-left" id="submit_glossary">Add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% endif %}
+
+  {% if user.userdata.contract_administrator %}
+  <div class="tab-pane" id="contracts">
+    <form class="form-horizontal panel panel-default" role="form">
+      <div id="add_entry_panel" class="panel-body">
+        <div class="form-group col-xs-3">
+          <div class="col-xs-12">
+            <label class="control-label" for="add_contract_select">
+              Account To Add a Contract to:
+            </label>
+          </div>
+          <div class="col-xs-12">
+            <input id="add_contract_select" type="text" class="form-control">
+          </div>
+        </div>
+        <div class="form-group col-xs-2">
+          <div class="col-xs-12 text-center">
+            <label class="control-label" for="contract_end_date">
+                Contract End Date:
+            </label>
+          </div>
+          <div class="col-xs-12 text-center">
+            <input id="contract_end_date"
+                   type="datetime-local"><br />(yyyy-mm-dd)
+          </div>
+
+          {% comment %}
+            <div class="col-xs-12 text-center">
+              <label class="control-label" for="minutes_mechanical">
+                  ASR Minutes:
+              </label>
+            </div>
+            <div class="col-xs-12 text-center">
+              <input id="minutes_mechanical"
+                     type="number">
+            </div>
+            <div class="col-xs-12 text-center">
+              <label class="control-label" for="minutes_premium">
+                  Premium Minutes:
+              </label>
+            </div>
+            <div class="col-xs-12 text-center">
+              <input id="minutes_premium"
+                     type="number">
+            </div>
+          {% endcomment %}
+
+          <div class="col-xs-12 text-center">
+            <label class="control-label" for="minutes_professional">
+                Professional Minutes:
+            </label>
+          </div>
+          <div class="col-xs-12 text-center">
+            <input id="minutes_professional"
+                   type="number">
+          </div>
+        </div>
+
+        <div class="form-group col-xs-2">
+          <div class="col-xs-12 text-center">
+            <label class="control-label">
+                &nbsp; <!--for better vertical alignment-->
+            </label>
+          </div>
+          <div class="col-xs-12 text-center">
+            <button type="button" class="btn btn-success" id="add_contract">Submit</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <div class="tab-pane" id="usage">
+    <div class="row">
+      <div class="col-lg-8 col-md-offset-2">
+        <form class="form-inline" role="form">
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if account_children %}
+                    <div class="form-group" id="account_control">
+                        <label for="account_id" class="contact-info-account-usage-filter-label" >Account:</label>
+                        <select id="account_id" name="account_id" class="contact-info-account-usage-filter-input">
+                            <option value="*" selected="">-- All --</option>
+                            {% for child in account_children %}
+                              <option value="{{child.name}}">
+                                  {% if child.depth > 1 %}{{'&#8627;&nbsp;'|rjust:child.depth}}{% endif %} {{child.name}}
+                              </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="form-group" data-provide="datepicker">
+                        <label>From: </label>
+                        <input id="start_date" type="text" class="datepicker">
+                    </div>
+                    <div class="form-group" data-provide="datepicker">
+                        <label>To: </label>
+                        <input id="end_date" type="text" class="datepicker">
+                    </div>
+                    <div class="form-group">
+                        <button id="fetch_usage_data" type="button" class="btn btn-default btn-sm">
+                          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <p id="contact-info-usage-error-message">
+                      Volume of data returned for selected date range is currently not supported. Please try selecting a shorter date range or contact <a href="mailto:support@mydomain.com">support@mydomain.com</a> for assistance to retrieve report for desired date range.
+                    </p>
+                </div>
+            </div>
+        </form>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+	<table class="table table-striped">
+	  <tr>
+	    <td>Minutes Processed - Professional</td>
+	    <td id="billableProfessional">{{ stats.billable_minutes_professional }}</td>
+	    <td>Minutes Processed - English</td>
+	    <td id="billableEnglish">{{ stats.billable_minutes_english_transcription }}</td>
+	  </tr>
+	  <tr>
+	    <td>Minutes Processed - Premium</td>
+	    <td id="billablePremium">{{ stats.billable_minutes_premium }}</td>
+	    <td>Minutes Processed - Foreign</td>
+	    <td id="billableForeign">{{ stats.billable_minutes_foreign_transcription }}</td>
+	  </tr>
+	  <tr>
+	    <td>Minutes Processed - Mechanical</td>
+	    <td id="billableMechanical">{{ stats.billable_minutes_mechanical }}</td>
+	    <td>Minutes Processed - Translation</td>
+	    <td id="billableTranslation">{{ stats.billable_minutes_translation }}</td>
+	  </tr>
+	  <tr>
+	    <td align="right" valign="middle">Total</td>
+	    <td></td>
+	    <td align="left" valign="middle" id="billableTotal">{{ stats.billable_minutes_total }}</td>
+	    <td></td>
+	  </tr>
+	</table>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+<p>
+    <a class="btn btn-light" href="{% url 'orders_Preset_list' %}">
+    Preset Listing
+    </a>
+</p>
+    
+<form method="post">
+{% csrf_token %}
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="name">name: </label>
+  <input class="form-control col-sm-10" id="name" type="text" name="name" value="{{ object.name }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="source_language">source_language: </label>
+  <input class="form-control col-sm-10" id="source_language" type="text" name="source_language" value="{{ object.source_language }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="turnaround_time">turnaround_time: </label>
+  <input class="form-control col-sm-10" id="turnaround_time" type="text" name="turnaround_time" value="{{ object.turnaround_time }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="global_default">global_default: </label>
+  <input class="form-control col-sm-10" id="global_default" type="text" name="global_default" value="{{ object.global_default }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="is_default">is_default: </label>
+  <input class="form-control col-sm-10" id="is_default" type="text" name="is_default" value="{{ object.is_default }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="target_languages">target_languages: </label>
+  <input class="form-control col-sm-10" id="target_languages" type="text" name="target_languages" value="{{ object.target_languages }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="speaker_id">speaker_id: </label>
+  <input class="form-control col-sm-10" id="speaker_id" type="text" name="speaker_id" value="{{ object.speaker_id }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="rush_12">rush_12: </label>
+  <input class="form-control col-sm-10" id="rush_12" type="text" name="rush_12" value="{{ object.rush_12 }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="true_verbatim">true_verbatim: </label>
+  <input class="form-control col-sm-10" id="true_verbatim" type="text" name="true_verbatim" value="{{ object.true_verbatim }}">
+  </div>
+  <div class="form-group row">
+  <label class="col-sm-2 col-form-label" for="rush_24">rush_24: </label>
+  <input class="form-control col-sm-10" id="rush_24" type="text" name="rush_24" value="{{ object.rush_24 }}">
+  </div>
+  <input type="submit" value="Save" class="btn btn-primary">
+</form>
+
+{% endblock %}

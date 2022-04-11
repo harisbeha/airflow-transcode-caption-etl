@@ -1,0 +1,467 @@
+https://codepen.io/videoindexer/pen/NzJeOb
+
+
+
+
+When you check the logs in your Stripe Dashboard ("Developer > Logs" section) do you see requests for the creation of the Token, Customer and Charges? Were these requests successful? Do you see any errors?
+
+In relation to Django Oscar, I'm not familiar with it so not sure if the below would help.
+
+But I had a look at the Django Oscar code and it seems that the "No payment was required" message is shown by the thank_you template when the Order record doesn't have any sources added to it (i.e order.sources.all returning empty):
+
+https://github.com/django-oscar/django-oscar/blob/master/src/oscar/templates/oscar/checkout/thank_you.html#L94
+
+So it could be that in your handle_payment code you may be not properly adding the source record to the current Order record as suggested in this recipe or the email thread you listed.
+
+For debugging this further, I would suggest to:
+
+    Check the logs in your Stripe dashboard to see if you are correctly creating the Charge.
+
+    query the Source model and check if any records are associated with the particular order ID
+
+    add some additional debug (log/print) statements to your code in handle_payment to check if it gets called and if it creates the Source record as it should be:
+
+    http://django-oscar.readthedocs.io/en/releases-1.1/howto/how_to_integrate_payment.html#integration-into-checkout
+
+
+
+
+5
+
+I have found a way to integrate Stripe with Django Oscar, this is one of the easy ways to do it.
+
+    Create a stripe account first from here:https://stripe.com/, you will get a publishable key and a secret key, you can view them after logging in into the stripe dashboard under Developers > API keys.
+
+    In your django oscar code side. Fork the checkout app from oscar, add it to the INSTALLED_APPS+=get_core_apps(['checkout']).To know how to fork an app you can follow this link from the docs:https://django-oscar.readthedocs.io/en/latest/topics/customisation.html#fork-oscar-app
+
+    Create a file called facade.py under checkout, copy the keys from your dashboard into the settings.py file and do the other changes as suggested in this link: Stripe payment gateway integration on the django oscar groups, it just happens to be titled wrong.Just follow this whole page and it's done.
+
+
+
+STRIPE_SECRET_KEY = "sk_test_....."
+STRIPE_PUBLISHABLE_KEY = "pk_test_....."
+STRIPE_CURRENCY = "USD"
+
+
+Set these in your local checkout apps' __init__.py:
+
+PAYMENT_EVENT_PURCHASE = 'Purchase'
+PAYMENT_METHOD_STRIPE = 'Stripe'
+STRIPE_EMAIL = 'stripeEmail'
+STRIPE_TOKEN = 'stripeToken'
+
+
+You will need to override the PaymentDetailsView to set the source and handle payment, as per the oscar docs:
+
+from django.conf import settings
+from oscar.core.loading import get_model
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+from oscar.apps.checkout.views import PaymentDetailsView as CorePaymentDetailsView
+from facade import Facade
+
+from . import PAYMENT_METHOD_STRIPE, PAYMENT_EVENT_PURCHASE, STRIPE_EMAIL, STRIPE_TOKEN
+
+import forms
+
+SourceType = get_model('payment', 'SourceType')
+Source = get_model('payment', 'Source')
+
+
+class PaymentDetailsView(CorePaymentDetailsView):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(PaymentDetailsView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PaymentDetailsView, self).get_context_data(**kwargs)
+        if self.preview:
+            ctx['stripe_token_form'] = forms.StripeTokenForm(self.request.POST)
+            ctx['order_total_incl_tax_cents'] = (
+                ctx['order_total'].incl_tax * 100
+            ).to_integral_value()
+        else:
+            ctx['stripe_publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
+        return ctx
+
+    def handle_payment(self, order_number, total, **kwargs):
+        stripe_ref = Facade().charge(
+            order_number,
+            total,
+            card=self.request.POST[STRIPE_TOKEN],
+            description=self.payment_description(order_number, total, **kwargs),
+            metadata=self.payment_metadata(order_number, total, **kwargs))
+
+        source_type, __ = SourceType.objects.get_or_create(name=PAYMENT_METHOD_STRIPE)
+        source = Source(
+            source_type=source_type,
+            currency=settings.STRIPE_CURRENCY,
+            amount_allocated=total.incl_tax,
+            amount_debited=total.incl_tax,
+            reference=stripe_ref)
+        self.add_payment_source(source)
+
+        self.add_payment_event(PAYMENT_EVENT_PURCHASE, total.incl_tax)
+
+    def payment_description(self, order_number, total, **kwargs):
+        return self.request.POST[STRIPE_EMAIL]
+
+    def payment_metadata(self, order_number, total, **kwargs):
+        return {'order_number': order_number}
+
+
+You can then create a payment facade in your local /apps/checkout. You won't be overriding an Oscar facade.py, since that doesn't exist in the checkout app. Something like this:
+
+from django.conf import settings
+from oscar.apps.payment.exceptions import UnableToTakePayment, InvalidGatewayRequestError
+
+import stripe
+
+
+class Facade(object):
+    def __init__(self):
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    @staticmethod
+    def get_friendly_decline_message(error):
+        return 'The transaction was declined by your bank - please check your bankcard details and try again'
+
+    @staticmethod
+    def get_friendly_error_message(error):
+        return 'An error occurred when communicating with the payment gateway.'
+
+    def charge(self,
+        order_number,
+        total,
+        card,
+        currency=settings.STRIPE_CURRENCY,
+        description=None,
+        metadata=None,
+        **kwargs):
+        try:
+            return stripe.Charge.create(
+                amount=(total.incl_tax * 100).to_integral_value(),
+                currency=currency,
+                card=card,
+                description=description,
+                metadata=(metadata or {'order_number': order_number}),
+                **kwargs).id
+        except stripe.CardError, e:
+            raise UnableToTakePayment(self.get_friendly_decline_message(e))
+        except stripe.StripeError, e:
+            raise InvalidGatewayRequestError(self.get_friendly_error_message(e))
+
+
+Now register your forms in your local /apps/checkout/forms.py like so:
+
+from django import forms
+
+
+class StripeTokenForm(forms.Form):
+    stripeEmail = forms.EmailField(widget=forms.HiddenInput())
+    stripeToken = forms.CharField(widget=forms.HiddenInput())
+
+
+
+Finally, in your payment_details.html template, you'll want this to allow Stripe's modal to pop up over your payment page:
+
+{% extends 'oscar/checkout/payment_details.html' %}
+{% load currency_filters %}
+
+{% block payment_details_content %}
+
+<form action="{% url 'checkout:preview' %}" class="form-stacked" method="POST">
+    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="{{ stripe_publishable_key }}" data-amount="{{ order_total_incl_tax_cents }}"
+            data-name="{{ shop_name }}"
+            data-description="{{ basket.num_items }} items ({{ order_total.incl_tax|currency }})">
+    </script>
+</form>
+
+{% endblock %}
+
+
+
+Sorry for the mass of pasted code, but it should get you rolling. Assuming you're working with a minimally tweaked oscar app (form actions & redirects are the same as oscar's built-in), you should be able to use this code as is (setting your keys appropriately). 
+
+
+Awesome post Joseph!
+
+I just wanted to update this for as of this post's creation time. I had to modify the end of the Facade class with:
+
+except stripe.error.CardError as e:
+    raise UnableToTakePayment(self.get_friendly_decline_message(e))
+except stripe.error.StripeError as e:
+    raise InvalidGatewayRequestError(self.get_friendly_error_message(e))
+
+
+instead of:
+
+except stripe.CardError, e:
+    raise UnableToTakePayment(self.get_friendly_decline_message(e))
+except stripe.StripeError, e:
+    raise InvalidGatewayRequestError(self.get_friendly_error_message(e))
+
+
+**If you don't follow this next step, the transaction will never complete.**
+I also had to add to my preview template in the block 'hiddenforms':
+
+<div style="display:none">
+    {% block hiddenforms %}
+        {{ stripe_token_form }}
+    {% endblock %}
+</div>
+
+This allowed the stripe payment details to persist to the preview page and so when the user clicks the place order button the payment is actually taken from the card.
+
+One other thing I had to do was modify the else statement of the get_context_data method in your local PaymentDetailsView class such that the total price appears in the 'Pay' button of the Stripe form when you are entering payment details on the payment details page:
+
+def get_context_data(self, **kwargs):
+    ctx = super(PaymentDetailsView, self).get_context_data(**kwargs)
+    if self.preview:
+        ctx['stripe_token_form'] = forms.StripeTokenForm(self.request.POST)
+        ctx['order_total_incl_tax_cents'] = (
+            ctx['order_total'].incl_tax * 100
+        ).to_integral_value()
+    else:
+        ctx['order_total_incl_tax_cents'] = (
+            ctx['order_total'].incl_tax * 100
+        ).to_integral_value()
+        ctx['stripe_publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
+    return ctx
+
+
+Hope this helps someone!
+
+
+$ git clone https://gitlab.com/sejuba1/hasura-auth.git
+
+$ cd hasura-auth
+
+$ pip install virtualenv
+
+$ virtualenv -p /usr/local/bin/python3 venv
+
+$ source venv/bin/activate
+
+$ pip install -r requirements.txt
+
+$ python manage.py makemigrations
+
+$ python manage.py migrate
+
+$ python manage.py runserver
+
+- go to http://127.0.0.1:8000/api/v1/rest-auth/registration/ register a user
+- get login token from http://127.0.0.1:8000/api/v1/api-token-auth/ using your registered username / password
+and you should get a token
+- try to decode the token from http://calebb.net/ or any other utility :D you should get something like this in hasura claims
+
+{
+ typ: "JWT",
+ alg: "HS256"
+}.
+{
+ https://hasura.io/jwt/claims: {
+  x-hasura-allowed-roles: [
+   "editor",
+   "user"
+  ],
+  x-hasura-default-role: "user",
+  x-hasura-user-id: "1"
+ }
+
+
+ demo graphQL app showcasing simple react connection 
+
+https://www.mozumder.net/blog/django-unchained-how-futureclaw-serves-pages-in-microseconds
+
+
+ https://github.com/django-oscar/django-oscar-stripe
+
+
+
+ https://storage.googleapis.com/presigned-customer-uploads/original-media%2Fc318f1d17e0840ee861389016bc640c2?Expires=1595523380&GoogleAccessId=microservice-writer%40coresystem-171219.iam.gserviceaccount.com&Signature=OBb83Gy9%2BS4MtiDlbKj6TD%2FDreTdIKDBKCC5qa%2F83PEtmK1ASQN5sbgIeLrb6va1a9dw9fSTzElQ8u82XpAn0pacx069KwAbw0duiSUoeFD2E3ELnIbsu2f1AO5YRGnFcej5c%2B1ji%2Fsm34mdckWpdJQ%2Bvd1cxHMnW08QxVyL34IFMApRbbd5lviReB9yXZ%2BzJtjkGgqwyKwSTuQsPIY2YC0qy1QN2cthno7qFk48zXXO%2FUIybcRWdQDNiKMJUJOP%2FOIluwdN5P%2BnjKpdeUP0KN6drkK4zI1nIUYptOoNfnU8GQJMB0RjrUlV80uDcBD%2BuiMIltSXjP2CYqYA0NkUtg%3D%3D
+
+
+
+import os
+from google.cloud import storage
+from datetime import datetime, timedelta
+import apps.core.backend.actions as backend_actions
+from apps.core.enums.media import MediaTypeEnum
+
+https://uppy.io/docs/plugins/
+https://transloadit.com/services/video-encoding/
+
+
+- go to http://127.0.0.1:8000/api/v1/rest-auth/registration/ register a user
+- get login token from http://127.0.0.1:8000/api/v1/api-token-auth/ using your registered username / password
+and you should get a token
+- try to decode the token from http://calebb.net/ or any other utility :D you should get something like this in hasura claims
+
+{
+ typ: "JWT",
+ alg: "HS256"
+}.
+{
+ https://hasura.io/jwt/claims: {
+  x-hasura-allowed-roles: [
+   "editor",
+   "user"
+  ],
+  x-hasura-default-role: "user",
+  x-hasura-user-id: "1"
+ }
+
+https://github.com/nhost/hasura-backend-plus#env-variables
+
+ https://developer.jwplayer.com/jwplayer/docs/protect-your-content-with-signed-urls
+
+ https://benwiley4000.github.io/cassette/styleguide/#volumecontrol
+
+
+
+
+for job_id in job_ids:
+    storage_client = storage.Client.from_service_account_json(os.path.join(settings.REPO_ROOT, 'google-cloud.json'))
+    bucket = storage_client.bucket('presigned-customer-uploads')
+    filename = "original-media/{0}".format(job_id) # name of file to be saved/uploaded to storage
+    blob = bucket.blob(filename)
+    get_expiration = datetime.now() + timedelta(days=7)
+    presigned_get_url = blob.generate_signed_url(get_expiration, method="GET")
+    print(presigned_get_url)
+    media = Media.objects.filter(job_fk__job_id=job_id)
+    if media.exists():
+        m = media.first()
+        m.original_storage_data = presigned_get_url
+        m.save()
+    else:
+        backend_actions.create_media(job_id, "DIRECTLINK", presigned_get_url)
+
+    replace_original_media_url_and_restart(job_id, presigned_get_url)
+
+
+
+pkey_data = {
+    "signing_cert": "-----BEGIN CERTIFICATE-----MIIC/TCCAeWgAwIBAgIJOadVVZKlQIobMA0GCSqGSIb3DQEBCwUAMBwxGjAYBgNVBAMTEWNpZWxvMjQuYXV0aDAuY29tMB4XDTIwMDMwNTA0NDAzOVoXDTMzMTExMjA0NDAzOVowHDEaMBgGA1UEAxMRY2llbG8yNC5hdXRoMC5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCjLb/a9dS37imHBaB9K9m7AAue7IcJMZmiMp5FTIVRpqSfiew+SU3/pNCz1zIZqlfwwvPfD6DhW9R4mkYQ2gChvP8RtUfq6ECVW46oPpA727XYd8/qrpGixQ6wRgqIQt3GSiqlXZMjCbJoFw7jJy9gtdb2VykaoaeURGU9D2TFlP1cVsR9+AIJ0Opk4528ic3vWeu0Wt+0kIMwERXCadMIJ9Sn3yxXlqrV+GFy3mk9tG3SD1gLBaTVSbbZ0lHsPvjt8VhHV6EaEGJg0BSzKitYGAExVILIjJlx7Dg1Dn3es3r+9b+fAVkZPMfWtElWBN/QorUBUEmee3PR6c82p6pHAgMBAAGjQjBAMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFHSCWxYkPYDMOi5oarpx5ps008HjMA4GA1UdDwEB/wQEAwIChDANBgkqhkiG9w0BAQsFAAOCAQEAAVa7mepFlwNciYcMElH8LJo/88XhVoZyAiJbqw6UtpB5yjl+c1pZWRe+bqnnKoW5YBYZUXuHUwnYKHqvqu+6xz5DJyFrGCSwAsElHe1Mitu2nXq4kN5mDBBvuOdlYWcOCCG7tLy17McEBWIE9dpRsVAx2TkacuJ2i5fxtpvxlIkYE+xM+DnnxYGGwTMNH18/kJtYaj2pV0GM4istBfAU9P1HdeGYnQfZEko7TGEklS4lzkYQ8n52yFe/VV51sTFWNX5BX+nWx/2jvDSenRnuUpuOjDuQc5m380AEIpY6lLbYjif1ZfEKcMPqAd5rgKgkZzjl56roafUrgJh0+dYYQg==-----END CERTIFICATE-----",
+    "key": "-----BEGIN CERTIFICATE-----\nMIIC/TCCAeWgAwIBAgIJOadVVZKlQIobMA0GCSqGSIb3DQEBCwUAMBwxGjAYBgNV\nBAMTEWNpZWxvMjQuYXV0aDAuY29tMB4XDTIwMDMwNTA0NDAzOVoXDTMzMTExMjA0\nNDAzOVowHDEaMBgGA1UEAxMRY2llbG8yNC5hdXRoMC5jb20wggEiMA0GCSqGSIb3\nDQEBAQUAA4IBDwAwggEKAoIBAQCjLb/a9dS37imHBaB9K9m7AAue7IcJMZmiMp5F\nTIVRpqSfiew+SU3/pNCz1zIZqlfwwvPfD6DhW9R4mkYQ2gChvP8RtUfq6ECVW46o\nPpA727XYd8/qrpGixQ6wRgqIQt3GSiqlXZMjCbJoFw7jJy9gtdb2VykaoaeURGU9\nD2TFlP1cVsR9+AIJ0Opk4528ic3vWeu0Wt+0kIMwERXCadMIJ9Sn3yxXlqrV+GFy\n3mk9tG3SD1gLBaTVSbbZ0lHsPvjt8VhHV6EaEGJg0BSzKitYGAExVILIjJlx7Dg1\nDn3es3r+9b+fAVkZPMfWtElWBN/QorUBUEmee3PR6c82p6pHAgMBAAGjQjBAMA8G\nA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFHSCWxYkPYDMOi5oarpx5ps008HjMA4G\nA1UdDwEB/wQEAwIChDANBgkqhkiG9w0BAQsFAAOCAQEAAVa7mepFlwNciYcMElH8\nLJo/88XhVoZyAiJbqw6UtpB5yjl+c1pZWRe+bqnnKoW5YBYZUXuHUwnYKHqvqu+6\nxz5DJyFrGCSwAsElHe1Mitu2nXq4kN5mDBBvuOdlYWcOCCG7tLy17McEBWIE9dpR\nsVAx2TkacuJ2i5fxtpvxlIkYE+xM+DnnxYGGwTMNH18/kJtYaj2pV0GM4istBfAU\n9P1HdeGYnQfZEko7TGEklS4lzkYQ8n52yFe/VV51sTFWNX5BX+nWx/2jvDSenRnu\nUpuOjDuQc5m380AEIpY6lLbYjif1ZfEKcMPqAd5rgKgkZzjl56roafUrgJh0+dYY\nQg==\n-----END CERTIFICATE-----",
+    "type": "RS512"
+}
+
+sample_payload = {
+    "https://hasura.io/jwt/claims": {
+    "x-hasura-default-role": "user",
+    "x-hasura-allowed-roles": [
+      "user"
+    ],
+    "x-hasura-user-id": "auth0|5f13b045ffb5070019def9b3",
+    "x-hasura-cirrus-user-id": 25
+  },
+  "nickname": "haristestjwt",
+  "name": "haristestjwt@mydomain.com",
+  "picture": "https://s.gravatar.com/avatar/26a4e3c04b9fee98c31c4cd2280efca2?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fha.png",
+  "updated_at": "2020-07-19T02:32:42.133Z",
+  "iss": "https://cielo24.auth0.com/",
+  "sub": "auth0|5f13b045ffb5070019def9b3",
+  "aud": "iXzz4RuoJuQh11hcEx4cxRBzJPWlP2oC",
+  "iat": 1595125962,
+  "exp": 1595161962
+}
+
+encoded = jwt.encode(sample_payload, private_key, algorithm='RS256')
+
+  "https://hasura.io/jwt/claims": {
+    "x-hasura-default-role": "user",
+    "x-hasura-allowed-roles": [
+      "user"
+    ],
+    "x-hasura-user-id": "auth0|5f13b045ffb5070019def9b3",
+    "x-hasura-cirrus-user-id": 25
+  }
+
+encoded = jwt.encode(sample_payload, key=psk, algorithm='HS256')  
+
+from rest_framework_jwt.settings import api_settings
+
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+payload = jwt_payload_handler(user)
+token = jwt_encode_handler(payload)
+
+
+{
+    "keys": [
+        {
+            "p": "woaokcE1Kyxbdw6BscMebklH6vlPBCQPuXW4cdEUrhAtJu0iTB2i_m_IFCsbWz3daXlUZC6CQ0w8FDQtDLCpjq3Chu_x4MZCOqtEmfSKTSLb9NhApQhqX5cDpwyhGa1wQLkRoqXq9i7G7odBWSCYeBQN2OhXQoebl1-bretoDlc",
+            "kty": "RSA",
+            "q": "ullbRgYpqIOTYxcQbDWJekBRArQktH1bzp7Z65sHtwYh-bevZczlqru6hm2_K1-gufgOiv8rgCqBCGYu7rOpj_XUOljGIhUQthIwLtNp_2cTt2lpv7pFPVuj_JeygqCAd_e2aXQHuXS6E4OK6CZlyHuskUqvKYhebgVGXE_Hgzc",
+            "d": "DmlNJ9T6oRFXRQRgBCi2VnKRHQBsxMdR4ggBTD-QuwJ_lhO8lpqZD0suNtcIocmWCMsZSfB6k4U3t0AMH4qqhYyk1y4v_X0fGFYg8yN4oXklrioeCk-FR-AmahCa4SIcZPCJbgjHCZq1PMh4AAjBGfGjwgByLDhkRWUZfEoIuM8nMoCpRdkiI3jqIcdI8G2sw1ZhRJCC3TvRnLZeVWxa2qv8S6TwvPzTYlVIJemMHzzEko06PYyiYibXHXgZW7klkqf-dY2Tc6M6IXHEQYgDzuT_aJJUAF4WfFT7iDxeYAjDQoto8Mvw5LphVE48d_1n2S_6_Ax6FfeRg1WYqsUZ-Q",
+            "e": "AQAB",
+            "use": "sig",
+            "qi": "tNM3tvVpBx781JdsvTzKHFUPI-UMug2Bs-t8QnFGTTNx6nUiW6x2tvBfOf6s4ngBNozmsKhdxcXwGjDCxlGeeRGBOBaeSLENiVTWfOdSBWGS9FOvI1N_7iIlFk_gjdf3DSR58uezM3Tozf4tPmU8GB5kUQdjmKvTBKfSZcY2W0M",
+            "dp": "B-FqrNT18XTPk8grqubrsa4YUsWc1N8dH_dL7Jh6zP5sxdnvfMPqmYIvydlhN1YPRTmcGJ7luhI5kNv4Qz5Y8CXL7qmD1AZUIopTsiT9AVj7LjUgkU8A-DRm-nqBgEfNd2HH_B3aofSNLJagKBsw8hRl5zaqalCSFhTSer5Bres",
+            "alg": "RS256",
+            "dq": "KFnXAMeu15V-IbPJ05SYK0eoAwzc8dQ_P_N3vqO4PPJwAvG6YjHG_Xxe_GLhRVQUqpBDHef5FGyfuiDeQsPWkJyrkuLMLG8hSjuQAWO4DRzV0R5bTq_X9FxWmwiCF_UHPHMAJb-BOLBE5prSRkiiO5JEIMXqPfUQdYRg4vZHfms",
+            "n": "jZm8pZR5g_O7KJffx9alAVb0PSlJ97aQhGjUo7Bb594EeWkwX3XQ8OMeZfzBeIYsJwnUIdfL9KGhcpiT-wpxJ6da9K3BqDo1LMyK1WnYbWB09VKGz1D3w2nJ5Cy2JTDNYK25yPhJyFaK60NZmaEDQDN-34mj6WCCGk4ZsRIT6eTHeWEZgZwVCN0HO4CQ8v_E9X3HLfFIAu762_9oFYzcfamW_vwVAzv9f6qde6wpw4YdRp9gRzJ7Vou50phs1rgIwSAf1kTA9w-cju9IyuGyg12bbd7EWvwGDPayz4oif81iTqEIWRRzBc7FCwLwYRZZYNH8vQWVOULZD31n0VKZsQ"
+        }
+    ]
+}
+
+
+
+
+
+
+>>import jwt
+>>private_key = b'-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBS...'
+>>public_key = b'-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEAC...'
+>>encoded = jwt.encode({current_payload, private_key, algorithm='RS256')
+'eyJhbGciOiJIU...'
+>>decoded = jwt.decode(encoded, public_key, algorithms='RS256')
+{'some': 'payload'}
+
+ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+# Don't add passphrase
+openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
+cat jwtRS256.key
+cat jwtRS256.key.pub
+
+
+import jwt 
+
+def generate_hasura_token(user, service=None):
+    private_signing_key = settings.JWT_RS256_PRIVATE_KEY
+    hasura_payload = construct_hasura_payload()
+    payload["https://hasura.io/jwt/claims"] = hasura_payload
+    payload["https://hasura.io/jwt/claims"]["x-cirrus-ss-user-id"] = user.id
+    hasura_token = jwt.encode(current_payload, private_signing_key, algorithm='RS256')
+    return hasura_token
+
+def get_legacy_enterprise_id():
+    return 1
+
+def get_legacy_ss_id():
+    return 1
+
+def get_cirrus_ss_id():
+    return 1
+
+def get_cirrus_enterprise_id():
+    return 1
+
+def construct_hasura_payload(**kwargs):
+    hasura_payload = {
+        "x-hasura-default-role": "user",
+        "x-hasura-allowed-roles": [
+            "user"
+        ],
+    }
+    return hasura_payload
+
+
+
+awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}'  ca.pem

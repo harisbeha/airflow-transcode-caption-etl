@@ -1,0 +1,409 @@
+<div class="container mx-auto pt-4 px-4 py-16 ">
+	<div class="container">
+	<h1 class="mb-8">
+    Responsive Tailwind Table
+  </h1>
+	<div id="app" style="overflow-x:auto;">
+		<table class="w-full shadow-lg rounded">
+			<thead>
+				<tr class="text-left bg-gray-300 border-b border-grey uppercase">
+			        <th class="px-2 py-6"></th>
+			        <th class="text-sm text-gray-700">Name</th>
+			        <th class="hidden md:table-cell  text-sm text-gray-700">Mobile</th>
+			        <th class="hidden md:table-cell text-sm text-gray-700">Email</th>
+			        <th></th>
+		      	</tr>
+			</thead>
+	        <tbody class="bg-white">
+		      	<tr class="accordion border-b border-grey-light hover:bg-gray-100" @click="panel = true">
+			        <td class="px-3 py-4">
+			         	<span class="bg-white border-2 ml-1 rounded border-gray-400 w-5 h-5 flex flex-shrink-0 focus-within:border-blue-500">
+							<input type="checkbox" class="opacity-0 absolute">
+							<svg class="fill-current hidden w-4 h-4 text-green-500 pointer-events-none" viewBox="0 0 20 20"><path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/></svg>
+						</span>
+			        </td>
+			        <td class="flex inline-flex items-center">
+			        	<span>
+			        		 <img
+					        class="hidden mr-1 md:mr-2 md:inline-block h-8 w-8 rounded-full object-cover"
+					        src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=144&h=144&q=80"
+					        alt=""
+					        />
+			        	</span>
+			        	<span class="py-3 w-40">
+			        		 <p class="text-gray-800 text-sm">Bernard Owiredu {{panel}}</p>
+			        		 <p class="md:hidden text-xs text-gray-600 font-medium">244224317</p>
+			          		 <p class="hidden md:table-cell text-xs text-gray-500 font-medium">Manager</p>
+			        	</span>
+			        </td>
+			        <td class="hidden md:table-cell">
+			          <p class="text-sm text-gray-800 font-medium">244224317</p>
+			          <p class="text-xs text-gray-500 font-medium">bernardkissi18@gmail.com</p>
+			        </td>
+			        <td class="hidden md:table-cell">
+			          <p class="text-sm text-gray-700 font-medium">Bernardkissi18@gmail.com</p>
+			        </td>
+			        <td>
+			          <svg
+			            class="mr-3 md:mr-1 h-12 w-6 fill-current text-grey-dark"
+			            xmlns="http://www.w3.org/2000/svg"
+			            viewBox="0 0 20 20"
+			          >
+			            <path
+			              d="M4 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+			            />
+			          </svg>
+			        </td>
+		      	</tr>
+		     
+		      	<tr @click="panel = false" :class="panel ? 'table-row bg-gray-100' : 'hidden'"  class="border-b border-grey-light w-full">
+		      		<td class=" py-4 px-3 text-sm text-gray-800 font-medium">1</td>
+		      		<td class="text-sm text-gray-800 font-medium">2</td>
+		      		<td class="text-sm text-gray-800 font-medium">3</td>
+		      	</tr>
+		
+		      	<tr class="accordion border-b border-grey-light items-center">
+			        <td class="px-3 py-4">
+			         	<span class="bg-white border-2 ml-1 rounded border-gray-400 w-5 h-5 flex flex-shrink-0 focus:border-blue-500">
+							<input type="checkbox" class="opacity-0 absolute">
+							<svg class="fill-current w-4 h-4 text-green-500 pointer-events-none" viewBox="0 0 20 20"><path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/></svg>
+						</span>
+			        </td>
+			        <td class="flex inline-flex items-center">
+			        	<span>
+			        		 <img
+					        class="hidden mr-1 md:mr-2 md:inline-block h-8 w-8 rounded-full object-cover"
+					        src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=144&h=144&q=80"
+					        alt=""
+					        />
+			        	</span>
+			        	<span class="py-3">
+			        		 <p class="text-gray-800 text-sm">Molly Sanders</p>
+			          		 <p class="md:hidden text-xs text-gray-600 font-medium">244224317</p>
+			          		 <p class="hidden md:table-cell text-xs text-gray-500 font-medium">Manager</p>
+			        	</span>
+			        </td>
+			        <td class="hidden md:table-cell">
+			          <p class="text-sm text-gray-800 font-medium">244224317</p>
+			          <p class="text-xs text-gray-500 font-medium">bernardkissi18@gmail.com</p>
+			        </td>
+			        <td class="hidden md:table-cell">
+			          <p class="text-sm text-gray-700 font-medium">Bernardkissi18@gmail.com</p>
+			        </td>
+			        <td>
+			          <svg
+			            class="h-12 w-6 fill-current text-grey-dark"
+			            xmlns="http://www.w3.org/2000/svg"
+			            viewBox="0 0 20 20"
+			          >
+			            <path
+			              d="M4 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+			            />
+			          </svg>
+			        </td>
+		      	</tr>
+		      	<tr :class="panel ? 'panel-show' : 'hidden'" class="border-b border-grey-light">
+		      		<td class=" py-4 px-3 text-sm text-gray-800 font-medium">1</td>
+		      		<td class="text-sm text-gray-800 font-medium">2</td>
+		      		<td class="text-sm text-gray-800 font-medium">3</td>
+		      	</tr>
+	     </tbody>
+	    </table>
+	</div>
+</div>
+</div>
+
+
+
+<div class="container mx-auto px-4 sm:px-8">
+    <div class="py-8">
+        <div>
+            <h2 class="text-2xl font-semibold leading-tight">Users</h2>
+        </div>
+        <div class="my-2 flex sm:flex-row flex-col">
+            <div class="flex flex-row mb-1 sm:mb-0">
+                <div class="relative">
+                    <select
+                        class="appearance-none h-full rounded-l border block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+                        <option>5</option>
+                        <option>10</option>
+                        <option>20</option>
+                    </select>
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="relative">
+                    <select
+                        class="appearance-none h-full rounded-r border-t sm:rounded-r-none sm:border-r-0 border-r border-b block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
+                        <option>All</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="block relative">
+                <span class="h-full absolute inset-y-0 left-0 flex items-center pl-2">
+                    <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current text-gray-500">
+                        <path
+                            d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z">
+                        </path>
+                    </svg>
+                </span>
+                <input placeholder="Search"
+                    class="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none" />
+            </div>
+        </div>
+        <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+            <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th
+                            class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Job Name
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Media Length
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Created
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                
+                        </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-3 py-4">
+                                <span class="bg-white border-2 ml-1 rounded border-gray-400 w-5 h-5 flex flex-shrink-0 focus-within:border-blue-500">
+                                   <input type="checkbox" class="opacity-0 absolute">
+                                   <svg class="fill-current hidden w-4 h-4 text-green-500 pointer-events-none" viewBox="0 0 20 20"><path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/></svg>
+                               </span>
+                           </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-10 h-10">
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-gray-900 whitespace-no-wrap">
+                                            Vera Carpenter
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">1m 49s</p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">
+                                    Jan 21, 2020
+                                </p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <span
+                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                    <span aria-hidden
+                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                    <span class="relative">Done</span>
+                                </span>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+
+                                <svg
+                                class="h-12 w-6 fill-current text-grey-dark"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M4 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+                                />
+                              </svg>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-4">
+                                <span class="bg-white border-2 ml-1 rounded border-gray-400 w-5 h-5 flex flex-shrink-0 focus-within:border-blue-500">
+                                   <input type="checkbox" class="opacity-0 absolute">
+                                   <svg class="fill-current hidden w-4 h-4 text-green-500 pointer-events-none" viewBox="0 0 20 20"><path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/></svg>
+                               </span>
+                           </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-10 h-10">
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-gray-900 whitespace-no-wrap">
+                                            Blake Bowman
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">2h 10m</p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">
+                                    Jan 01, 2020
+                                </p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <span
+                                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                    <span aria-hidden
+                                        class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                    <span class="relative">Done</span>
+                                </span>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+
+                                <svg
+                                class="h-12 w-6 fill-current text-grey-dark"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M4 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+                                />
+                              </svg>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-4">
+                                <span class="bg-white border-2 ml-1 rounded border-gray-400 w-5 h-5 flex flex-shrink-0 focus-within:border-blue-500">
+                                   <input type="checkbox" class="opacity-0 absolute">
+                                   <svg class="fill-current hidden w-4 h-4 text-green-500 pointer-events-none" viewBox="0 0 20 20"><path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/></svg>
+                               </span>
+                           </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-10 h-10">
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-gray-900 whitespace-no-wrap">
+                                            Dana Moore
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">1h 14m</p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">
+                                    Jan 10, 2020
+                                </p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <span
+                                    class="relative inline-block px-3 py-1 font-semibold text-orange-900 leading-tight">
+                                    <span aria-hidden
+                                        class="absolute inset-0 bg-orange-200 opacity-50 rounded-full"></span>
+                                    <span class="relative">Poor Quality</span>
+                                </span>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+
+                                <svg
+                                class="h-12 w-6 fill-current text-grey-dark"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M4 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+                                />
+                              </svg>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-4">
+                                <span class="bg-white border-2 ml-1 rounded border-gray-400 w-5 h-5 flex flex-shrink-0 focus-within:border-blue-500">
+                                   <input type="checkbox" class="opacity-0 absolute">
+                                   <svg class="fill-current hidden w-4 h-4 text-green-500 pointer-events-none" viewBox="0 0 20 20"><path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/></svg>
+                               </span>
+                           </td>
+                            <td class="px-5 py-5 bg-white text-sm">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-10 h-10">
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-gray-900 whitespace-no-wrap">
+                                            Alonzo Cox
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">1m 31s</p>
+                            </td>
+                            <td class="px-5 py-5 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">Jan 18, 2020</p>
+                            </td>
+                            <td class="px-5 py-5 bg-white text-sm">
+                                <span
+                                    class="relative inline-block px-3 py-1 font-semibold text-blue-900 leading-tight">
+                                    <span aria-hidden
+                                        class="absolute inset-0 bg-blue-200 opacity-50 rounded-full"></span>
+                                    <span class="relative">Pending</span>
+                                </span>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+
+                                <svg
+                                class="h-12 w-6 fill-current text-grey-dark"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M4 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+                                />
+                              </svg>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div
+                    class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between          ">
+                    <span class="text-xs xs:text-sm text-gray-900">
+                        Showing 1 to 4 of 50 Entries
+                    </span>
+                    <div class="inline-flex mt-2 xs:mt-0">
+                        <button
+                            class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l">
+                            Prev
+                        </button>
+                        <button
+                            class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    {{ created_instance }}
+    <h2>{{ form_label }}</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        <table border="1" cellpadding="10">
+            {% for field in form %}
+                <tr>
+                    <th align="left">{{  field.label_tag }}</th>
+                    <td align="left">
+                        {{ field.errors }}
+                        {{ field }}
+                        {{ field.help_text }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

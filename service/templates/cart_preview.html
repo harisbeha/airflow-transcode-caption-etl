@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% load mathfilters %}
+
+{% block title %}
+<title>
+  Cart | MyApp by MyDomain
+</title>
+{% endblock %}
+
+{% block content %}
+
+{% block data %}
+
+<link href="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/datatables/datatables.min.css"
+  rel="stylesheet" type="text/css" />
+
+
+<script>
+  $(document).ready(function () {
+    stripe = "{{stripe_public_key}}";
+    var stripe = Stripe('{{stripe_public_key}}');
+
+    $("#checkoutButton").click(function () {
+      stripe.redirectToCheckout({
+        // Make the id field from the Checkout Session creation API response
+        // available to this file, so you can provide it as parameter here
+        // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+        sessionId: '{{CHECKOUT_SESSION_ID}}'
+      }).then(function (result) {
+        // If `redirectToCheckout` fails due to a browser or network
+        // error, display the localized error message to your customer
+        // using `result.error.message`.
+        console.log("error");
+      });
+    });
+  });
+</script>
+
+
+
+<div class="row">
+  <div class="col-12">
+    <div class="page-title-box d-flex align-items-center justify-content-between">
+      <h4 class="page-title mb-0 font-size-18">Cart</h4>
+
+      <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+          <li class="breadcrumb-item">
+            <a href="javascript: void(0);">
+              Cart
+            </a>
+          </li>
+          <li class="breadcrumb-item active">Preview</li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<form method="POST" id="cart-preview-form">
+
+  <div class="row" style="margin-bottom:20px;">
+    <div class="col-4 offset-8">
+      <button class="btn-primary hover:bg-warning text-white font-semibold btn btn-primary waves-effect waves-light"
+        style="float:right;" type="submit">
+        <i class="fa fa-sync"></i> Update Cart
+      </button>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          {{ formset.management_form }}
+          {% csrf_token %}
+          <!-- <template x-for="invoice in items" :key="invoice.id"> -->
+          <div class="table-responsive">
+            <table class="table table-editable table-nowrap table-borderless">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Entry</th>
+                  <th><a href="https://help.mydomain.com/en/articles/4101053-pricing-services"><span class="fa fa-question-circle" style="margin-right:5px"></span></a> Product</th>
+                  <th>Minutes</th>
+                  <th>Price per minute</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              {% for form in formset %}
+              <tr>
+                <td>
+                  {% if form.instance.entry.thumbnail_url %} <img src="{{form.instance.entry.thumbnail_url|safe }}"
+                    style="height:70px; width: 120px; border-radius: 1rem;" />{% endif %}
+                </td>
+                <td>
+                  <p>{{form.instance.entry.title}}</p>
+                  <p>{{form.instance.entry.integration_source }}</p>
+                  <p>{{ form.instance.entry.external_id }}</p>
+                </td>
+                <td>
+                  <div>
+                    {{form.as_p}}
+                  </div>
+                </td>
+                <td>
+                  {% with denominator=60000 %}
+                  {{ form.instance.entry.media_length_ms|div:denominator|stringformat:'0.2f' }}
+                  {% endwith %}
+                </td>
+                <td>
+                  {{form.instance.product_template.price}}
+                </td>
+                <td>
+                  <a class="ml-4" href="/cart/remove/{{form.instance.uuid}}"> <span class="fa fa-trash"></span></a>
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- end col -->
+  </div>
+</form>
+
+<div class="row">
+  <div class="col-4 offset-8">
+    <center><span class="badge badge-soft-primary" style="margin-bottom:15px;">Automatic 30% discount in effect for YouTube creators</span></center><br>
+  </div>
+  
+  {% if discount > 0.00 %}
+    <div class="col-4 offset-8">
+      <center><span class="badge badge-soft-primary" style="margin-bottom:15px;">You saved ${{discount|stringformat:'0.2f'}}</span></center><br>
+    </div>
+  {% endif %}
+  
+  <div class="col-4 offset-8">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex justify-between mb-3">
+          <div class="text-gray-800 text-center flex-1">Subtotal</div>
+          <div class="text-center w-40">
+            <div class="text-gray-800 font-medium" x-html="netTotal">${{subtotal|stringformat:'0.2f'}}</div>
+          </div>
+        </div>
+        <hr />
+        <div class="flex justify-between mb-4">
+          <div class="text-sm text-gray-600 text-center flex-1"></div>
+          <div class="text-center w-40">
+            <div class="text-sm text-gray-600" x-html="totalGST">
+            </div>
+          </div>
+        </div>
+
+        </hr>
+
+        <div class="py-2 border-t border-b">
+          <div class="flex justify-between">
+            <div class="text-xl text-gray-600 text-center flex-1">Total</div>
+            <div class="text-center w-40">
+              <div class="text-xl text-gray-800 font-bold" x-html="netTotal">${{total|stringformat:'0.2f'}}</div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <center>
+          <span class="errorMsg"></span>
+          <button id="checkoutButton"
+            class="hover:btn-primary btn btn-success waves-effect waves-light rounded shadow-sm" type="submit">
+            <div class="spinner hidden" id="spinner"></div>
+            <span id="button-text">Go to Checkout</span>
+          </button>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+<script>
+  var checkboxes = $("input[type='checkbox']");
+  var submitButton = $("button[type='submit']");
+
+  checkboxes.click(function () {
+    submitButton.attr("disabled", !checkboxes.is(":checked"));
+  });
+
+  $(document).ready(function () {
+
+    $('#select-all').click(function () {
+      var checked = this.checked;
+      $('input[type="checkbox"]').each(function () {
+        this.checked = checked;
+      });
+    })
+  });
+</script>
+
+
+<!-- Required datatable js -->
+<script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/datatables/datatables.min.js">
+</script>
+<script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/jszip/jszip.min.js"></script>
+<script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/pdfmake/pdfmake.min.js"></script>
+
+<!-- Datatable init js -->
+<script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/js/pages/datatables.init.js"></script>
+<script
+  src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/bootstrap-editable/bootstrap-editable.min.js">
+</script>
+<script>
+  /*
+Template Name: Qovex - Responsive Bootstrap 4 Admin Dashboard
+Author: Themesbrand
+Website: https://themesbrand.com/
+Contact: themesbrand@gmail.com
+File: table editable
+*/
+  (function ($) {
+    var datatable = $('.table-editable').dataTable({
+      "columns": [{
+        "name": "id"
+      }, {
+        "name": "thumbnail"
+      }, {
+        "name": "published_at"
+      }, {
+        "name": "title"
+      }, {
+        "name": "video_id"
+      }, {
+        "name": "media_length"
+      }],
+      "bPaginate": true,
+      "fnRowCallback": function fnRowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+        var setCell = function setCell(response, newValue) {
+          var table = new $.fn.dataTable.Api('.table');
+          var cell = table.cell('td.focus');
+          var cellData = cell.data();
+          var div = document.createElement('div');
+          div.innerHTML = cellData;
+          var a = div.childNodes;
+          a.innerHTML = newValue;
+          console.log('jml a new ' + div.innerHTML);
+          cell.data(div.innerHTML);
+          highlightCell($(cell
+            .node())); // This is huge cheese, but the a has lost it's editable nature.  Do it again.
+
+        };
+
+        $('.editable').editable({
+          'mode': 'inline',
+          'success': setCell
+        });
+      },
+      "autoFill": {
+        "columns": [1, 2]
+      },
+      "keys": true
+    });
+    addCellChangeHandler();
+    addAutoFillHandler();
+
+    function highlightCell($cell) {
+      var originalValue = $cell.attr('data-original-value');
+
+      if (!originalValue) {
+        return;
+      }
+
+      var actualValue = $cell.text();
+
+      if (!isNaN(originalValue)) {
+        originalValue = parseFloat(originalValue);
+      }
+
+      if (!isNaN(actualValue)) {
+        actualValue = parseFloat(actualValue);
+      }
+
+      if (originalValue === actualValue) {
+        $cell.removeClass('cat-cell-modified').addClass('cat-cell-original');
+      } else {
+        $cell.removeClass('cat-cell-original').addClass('cat-cell-modified');
+      }
+    }
+
+    function addCellChangeHandler() {
+      $('a[data-pk]').on('hidden', function (e, editable) {
+        var $a = $(this);
+        var $cell = $a.parent('td');
+        highlightCell($cell);
+      });
+    }
+
+    function addAutoFillHandler() {
+      var table = $('.table').DataTable();
+      table.on('autoFill', function (e, datatable, cells) {
+        var datatableCellApis = $.each(cells, function (index, row) {
+          var datatableCellApi = row[0].cell;
+          var $jQueryObject = $(datatableCellApi.node());
+          highlightCell($jQueryObject);
+        });
+      });
+    }
+  })(jQuery);
+</script>
+<script>
+    function updateCart() {
+        var form = document.getElementById('cart-preview-form');
+        form.submit();
+    }
+</script>
+
+{% endblock %}

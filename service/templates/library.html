@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% load render_table from django_tables2 %}
+{% load mathfilters %}
+
+{% block title %}
+<title>
+  Media Library | MyApp by MyDomain
+</title>
+
+{% if show_signup_conversion_script %}
+    <script>gtag('event', 'conversion', {'send_to': 'AW-975826295/cFscCNzH0VkQ99qn0QM'});</script>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+{% block data %}
+
+
+{% if not has_entries %}
+
+<div class="shadow-lg rounded-lg bg-white mx-auto m-8 p-4 notification-box flex w-1/2">
+  <div class="pr-2">
+    <svg class="fill-current text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22"
+      height="22">
+      <path class="heroicon-ui"
+        d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-3.54-4.46a1 1 0 0 1 1.42-1.42 3 3 0 0 0 4.24 0 1 1 0 0 1 1.42 1.42 5 5 0 0 1-7.08 0zM9 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+    </svg>
+  </div>
+  <div>
+    <center>
+      <div class="text-sm pb-2">
+        <span>
+          No integrations connected
+        </span>
+      </div>
+    </center>
+    <div class="text-sm text-gray-600  tracking-tight text-center">
+      <span>
+      </span>
+      <span>
+        Click the Integrations tab in the Navigation bar above to begin importing content
+        from YouTube and other platforms.
+      </span>
+    </div>
+  </div>
+</div>
+
+{% else %}
+
+<div class="row">
+  <div class="col-12">
+    <div class="page-title-box d-flex align-items-center justify-content-between">
+      <h4 class="page-title mb-0 font-size-18">Library</h4>
+
+      <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+          <li class="breadcrumb-item">
+            <a href="javascript: void(0);">
+              Media
+            </a>
+          </li>
+          <li class="breadcrumb-item active">Library</li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<link href="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/datatables/datatables.min.css"
+  rel="stylesheet" type="text/css" />
+
+<form action="/library" method="POST">
+  {% csrf_token %}
+  <div class="row" style="margin-bottom:20px;">
+    <div class="col-4 offset-8">
+      <button class="btn-success hover:bg-warning text-white font-semibold btn btn-primary waves-effect waves-light"
+        style="float:right;" type="submit">
+        <i class="fa fa-cart-plus"></i> Add to Cart
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <div class="table-responsive">
+              <table class="table table-nowrap table-sm">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Entry</th>
+                    <th>Integration Source</th>
+                    <th>Title</th>
+                    <th>Video ID</th>
+                    <th>Length</th>
+                    <th></th>
+                  </tr>
+                </thead>
+
+                {% for item in entry_list.all %}
+                <tr>
+                  <td>
+                    <input type="checkbox" name="id" value="{{item.id}}">
+                  </td>
+                  <td>
+                    <img src="{{item.thumbnail_url|safe}}" style="height:70px; width: 120px; border-radius: 1rem;" />
+                  </td>
+                  <td data-original-value="11">
+                    <p>{{ item.published_at|date:"d M Y" }}</p>
+                    <p>{{ item.integration_source }}</p>
+                    <p>{{ item.external_id }}</p>
+                  </td>
+                  <td data-original-value="1">{{ item.title|truncatechars:40 }}</td>
+                  <td data-original-value="1.99">{{item.external_id|truncatechars:12}}></td>
+                  <td data-original-value="1">
+                    {% with denominator=60000 %}
+                    {{ item.media_length_ms|div:denominator|stringformat:'0.2f' }}
+                    {% endwith %}
+                  </td>
+                  <td data-original-value="1">
+                    <span class="class=" badge badge-soft-danger font-size-12">NO ORDERS</span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- end col -->
+  </div>
+</form>
+
+{% endif %}
+
+
+</div>
+</div>
+
+
+</div>
+
+{% endblock %}
+
+
+<script>
+  var checkboxes = $("input[type='checkbox']");
+  var submitButton = $("button[type='submit']");
+
+  checkboxes.click(function () {
+    submitButton.attr("disabled", !checkboxes.is(":checked"));
+  });
+
+  $(document).ready(function () {
+
+        $(document).ready(function () {
+
+
+
+          $('#select-all').click(function () {
+            var checked = this.checked;
+            $('input[type="checkbox"]').each(function () {
+              this.checked = checked;
+            });
+          })
+        });
+</script>
+
+
+<!-- Required datatable js -->
+<script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/datatables/datatables.min.js">
+</script>
+<script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/jszip/jszip.min.js"></script>
+<script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/pdfmake/pdfmake.min.js"></script>
+
+<!-- Datatable init js -->
+<script src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/js/pages/datatables.init.js"></script>
+<script
+  src="https://storage.googleapis.com/cirrus-static-assets/frontend_assets/libs/bootstrap-editable/bootstrap-editable.min.js">
+</script>
+<script>
+  /*
+Template Name: Qovex - Responsive Bootstrap 4 Admin Dashboard
+Author: Themesbrand
+Website: https://themesbrand.com/
+Contact: themesbrand@gmail.com
+File: table editable
+*/
+  (function ($) {
+    var datatable = $('.table-editable').dataTable({
+      "columns": [{
+        "name": "id"
+      }, {
+        "name": "thumbnail"
+      }, {
+        "name": "published_at"
+      }, {
+        "name": "title"
+      }, {
+        "name": "video_id"
+      }, {
+        "name": "media_length"
+      }, {
+        "name": "has_orders"
+      }],
+      "bPaginate": true,
+      "fnRowCallback": function fnRowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+        var setCell = function setCell(response, newValue) {
+          var table = new $.fn.dataTable.Api('.table');
+          var cell = table.cell('td.focus');
+          var cellData = cell.data();
+          var div = document.createElement('div');
+          div.innerHTML = cellData;
+          var a = div.childNodes;
+          a.innerHTML = newValue;
+          console.log('jml a new ' + div.innerHTML);
+          cell.data(div.innerHTML);
+          highlightCell($(cell
+            .node())); // This is huge cheese, but the a has lost it's editable nature.  Do it again.
+
+        };
+
+        $('.editable').editable({
+          'mode': 'inline',
+          'success': setCell
+        });
+      },
+      "autoFill": {
+        "columns": [1, 2]
+      },
+      "keys": true
+    });
+    addCellChangeHandler();
+    addAutoFillHandler();
+
+    function highlightCell($cell) {
+      var originalValue = $cell.attr('data-original-value');
+
+      if (!originalValue) {
+        return;
+      }
+
+      var actualValue = $cell.text();
+
+      if (!isNaN(originalValue)) {
+        originalValue = parseFloat(originalValue);
+      }
+
+      if (!isNaN(actualValue)) {
+        actualValue = parseFloat(actualValue);
+      }
+
+      if (originalValue === actualValue) {
+        $cell.removeClass('cat-cell-modified').addClass('cat-cell-original');
+      } else {
+        $cell.removeClass('cat-cell-original').addClass('cat-cell-modified');
+      }
+    }
+
+    function addCellChangeHandler() {
+      $('a[data-pk]').on('hidden', function (e, editable) {
+        var $a = $(this);
+        var $cell = $a.parent('td');
+        highlightCell($cell);
+      });
+    }
+
+    function addAutoFillHandler() {
+      var table = $('.table').DataTable();
+      table.on('autoFill', function (e, datatable, cells) {
+        var datatableCellApis = $.each(cells, function (index, row) {
+          var datatableCellApi = row[0].cell;
+          var $jQueryObject = $(datatableCellApi.node());
+          highlightCell($jQueryObject);
+        });
+      });
+    }
+  })(jQuery);
+</script>
+
+
+{% endblock %}
+
+
+<!-- 
+
+<a href="/start_import" class="shadow inline-flex items-center bg-blue-500 hover:bg-blue-600 focus:outline-none focus:shadow-outline text-white font-semibold py-2 px-4 rounded-lg border-r">Import</a>
+<button class="no-underline px-3 py-2 my-4 mr-1 bg-white text-center text-base text-white bg-blue-500 border border-blue-500 rounded shadow">Upload</button>
+<button class="no-underline px-3 py-2 my-4 bg-white text-center text-base text-white bg-blue-500 border border-blue-500 rounded shadow" type="submit" disabled>Approve</button> -->

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% load render_table from django_tables2 %}
+
+
+{% block content %}
+<!-- {% for meeting in meetings %}
+{{ meeting.id }}
+{{ meeting.start_time }}
+{{ meeting.topic }}
+    {% for media in meeting.recording_files %}
+        {% if media.file_type == "MP4" %}
+            <a href="{{media.play_url}}" >Preview </a>
+            {{ media.meeting_id }}
+        {% endif %}
+    {% endfor %}
+{% endfor %} -->
+
+
+<div class="m-4">
+    <div id="task-container" class="w-full">
+      <!---->
+      <!---->
+
+      
+      <div class="my-4 flex items-center">
+        <button class="no-underline px-3 py-2 my-4 bg-white text-center text-base text-white bg-orange-500 border border-orange-500 rounded shadow" type="submit" disabled>Import Selected</button>
+      </div>
+      <div class="mb-8">
+        <div class="border-t border-b border-gray-400">
+          <div class="flex flex-row flex-wrap text-gray-700">
+            <div class="p-4 pl-0">
+              <div class="pb-1 flex justify-between items-center">
+                <div>Requested By</div>
+                <div class="text-xs font-medium border-b border-indigo-500 cursor-pointer">Clear</div>
+              </div>
+              <div class="flex flex-row items-center relative w-64"><select class="w-full block appearance-none bg-white border border-gray-500 rounded text-gray-800 py-1 px-4 pr-8">
+                  <option selected="selected" disabled="disabled" hidden="hidden" value="">Select a User</option>
+                  <option class="my-2 text-lg" value="1">Nehal Hasnayeen</option>
+                  <option class="my-2 text-lg" value="2">Richard A. Hoyle</option>
+                </select> 
+                
+                <!-- <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="pointer-events-none items-center text-gray-600 absolute right-0 mr-3 svg-inline--fa fa-chevron-down fa-w-14">
+                  <path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" class=""></path>
+                </svg> -->
+              
+              
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="pb-1 flex justify-between items-center">
+                <div>Tags</div>
+                <div class="text-xs font-medium border-b border-indigo-500 cursor-pointer">Clear</div>
+              </div>
+              <div class="flex flex-row items-center relative w-64"><select class="w-full block appearance-none bg-white border border-gray-500 rounded text-gray-800 py-1 px-4 pr-8">
+                  <option selected="selected" disabled="disabled" hidden="hidden" value="">Select a Tag</option>
+                  <option class="my-2 text-lg" value="3">Backend</option>
+                  <option class="my-2 text-lg" value="1">Bug</option>
+                  <option class="my-2 text-lg" value="4">Feature</option>
+                  <option class="my-2 text-lg" value="2">Frontend</option>
+                  <option class="my-2 text-lg" value="5">Improvement</option>
+                </select> 
+                
+                <!-- <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="pointer-events-none items-center text-gray-600 absolute right-0 mr-3 svg-inline--fa fa-chevron-down fa-w-14">
+                  <path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" class=""></path>
+                </svg> -->
+              
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="pb-1 flex justify-between items-center">
+                <div> Date Added </div>
+                <div class="text-xs font-medium border-b border-indigo-500 cursor-pointer">Clear</div>
+              </div>
+              <div class="vdp-datepicker">
+                <div class="">
+                  <!----> <input type="text" placeholder="Select Date" readonly="readonly" autocomplete="off" class="w-full block appearance-none bg-white border border-gray-500 rounded text-gray-800 py-1 px-4 pr-8">
+                  <!---->
+                </div>
+                <div class="vdp-datepicker__calendar" style="display: none;">
+                  <header><span class="prev">&lt;</span> <span class="day__month_btn up">Apr 2020</span> <span class="next">&gt;</span></header>
+                  <div class=""><span class="cell day-header">Sun</span><span class="cell day-header">Mon</span><span class="cell day-header">Tue</span><span class="cell day-header">Wed</span><span class="cell day-header">Thu</span><span class="cell day-header">Fri</span><span class="cell day-header">Sat</span> <span class="cell day blank"></span><span class="cell day blank"></span><span class="cell day blank"></span><span class="cell day">1</span><span class="cell day">2</span><span class="cell day">3</span><span class="cell day weekend sat">4</span><span class="cell day weekend sun">5</span><span class="cell day">6</span><span class="cell day">7</span><span class="cell day">8</span><span class="cell day">9</span><span class="cell day">10</span><span class="cell day weekend sat">11</span><span class="cell day weekend sun">12</span><span class="cell day">13</span><span class="cell day">14</span><span class="cell day">15</span><span class="cell day">16</span><span class="cell day">17</span><span class="cell day weekend sat">18</span><span class="cell day weekend sun">19</span><span class="cell day">20</span><span class="cell day today">21</span><span class="cell day">22</span><span class="cell day">23</span><span class="cell day">24</span><span class="cell day weekend sat">25</span><span class="cell day weekend sun">26</span><span class="cell day">27</span><span class="cell day">28</span><span class="cell day">29</span><span class="cell day">30</span></div>
+                </div>
+                <div class="vdp-datepicker__calendar" style="display: none;">
+                  <header><span class="prev">&lt;</span> <span class="month__year_btn up">2020</span> <span class="next">&gt;</span></header> <span class="cell month">January</span><span class="cell month">February</span><span class="cell month">March</span><span class="cell month">April</span><span class="cell month">May</span><span class="cell month">June</span><span class="cell month">July</span><span class="cell month">August</span><span class="cell month">September</span><span class="cell month">October</span><span class="cell month">November</span><span class="cell month">December</span>
+                </div>
+                <div class="vdp-datepicker__calendar" style="display: none;">
+                  <header><span class="prev">&lt;</span> <span>2020 - 2029</span> <span class="next">&gt;</span></header> <span class="cell year">2020</span><span class="cell year">2021</span><span class="cell year">2022</span><span class="cell year">2023</span><span class="cell year">2024</span><span class="cell year">2025</span><span class="cell year">2026</span><span class="cell year">2027</span><span class="cell year">2028</span><span class="cell year">2029</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!---->
+    </div>
+    
+        <form action="." method="POST">
+            {% csrf_token %}
+
+            
+            {% render_table table %}
+          </form>
+  </div>
+
+{% endblock %}
