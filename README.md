@@ -4,5 +4,5 @@
 ![Docker](https://github.com/cielo24/legacy-db-microservices/workflows/Docker/badge.svg)
 
 
-# legacy-db-microservices
-Lightweight Django 3 REST APIs/Interfaces for Legacy Models
+# legacy-db-microservices-airflow-django
+Lightweight Django 3 REST APIs/Interface bridge for legacy Django <2.0 Models
